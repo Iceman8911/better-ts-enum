@@ -21,7 +21,15 @@
 		".": {
 			"import": {
 				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
+				"default": "./dist/index.js",
+				"require": "./dist/index.cjs"
+			}
+		},
+		"./arithmetic": {
+			"import": {
+				"types": "./dist/arithmetic.d.ts",
+				"default": "./dist/arithmetic.js",
+				"require": "./dist/arithmetic.cjs"
 			}
 		},
 		"./package.json": "./package.json"
