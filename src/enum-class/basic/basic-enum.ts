@@ -28,6 +28,13 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 
 		this.#size = Object.keys(this).length;
 
+		Object.defineProperty(this, "$", {
+			value: this.$,
+			enumerable: false,
+			configurable: false,
+			writable: false,
+		});
+
 		return Object.freeze(this) as this;
 	}
 
