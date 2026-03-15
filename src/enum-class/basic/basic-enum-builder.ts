@@ -40,16 +40,17 @@ export default class BasicEnumBuilder<
 	#enumState: FromEntries<TCurrentEnumBuilderState> = {};
 	#lastValue?: EnumValue;
 
-	constructor() {}
-
+	/** Chainer for adding an enum member with an auto-incremented and inferred numeric value similar to native typescript enums. */
 	$<
 		TKey extends EnumKey,
 		TValue extends EnumValue = GetNextDefaultNumberToUseAsEnumValue<TCurrentEnumBuilderState>,
 	>(key: TKey): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>>;
+	/** Chainer for adding an enum member with an explictly defined value. */
 	$<TKey extends EnumKey, TValue extends EnumValue>(
 		key: TKey,
 		value: TValue,
 	): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>>;
+	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums. */
 	$<
 		TKey extends EnumKey,
 		TValue extends EnumValue = GetNextDefaultNumberToUseAsEnumValue<TCurrentEnumBuilderState>,
@@ -58,6 +59,7 @@ export default class BasicEnumBuilder<
 			enumSoFar: Simplify<FromEntries<TCurrentEnumBuilderState>>,
 		) => TKey | readonly [TKey, TValue],
 	): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>>;
+	/** Chainer for adding more enum members with maximum type safety */
 	$<
 		TKey extends EnumKey,
 		TValue extends EnumValue = GetNextDefaultNumberToUseAsEnumValue<TCurrentEnumBuilderState>,
@@ -100,7 +102,9 @@ export default class BasicEnumBuilder<
 		return this.#lastValue + 1;
 	}
 
-	build(): Simplify<GetBasicEnumShape<FromEntries<TCurrentEnumBuilderState>>> {
+	//@ts-expect-error The simplified type is much more readable
+	build(): GetBasicEnumShape<Simplify<FromEntries<TCurrentEnumBuilderState>>> {
+		//@ts-expect-error The simplified type is much more readable
 		return BasicEnum.new(this.#enumState);
 	}
 }
