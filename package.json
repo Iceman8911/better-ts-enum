@@ -1,5 +1,5 @@
 {
-	"name": "betterenum",
+	"name": "@iceman8911/betterenum",
 	"version": "0.1.0",
 	"description": "Yet another typescript enum replacement. It'll be good trust",
 	"homepage": "https://github.com/iceman8911/betterenum#readme",
