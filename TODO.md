@@ -1,0 +1,2 @@
+- Add more types of enums (Bitwise Enums, Basic Enums, Full Enums, Label Enums (with reverse mapping??? or may that's the job for another enum))
+- Support JSDocs on enum members
