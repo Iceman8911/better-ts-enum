@@ -12,4 +12,6 @@ export type EnumKeys<TEnum extends EnumLike> =
 export type EnumValues<TEnum extends EnumLike> =
 	TEnum extends EnumLike<infer _, infer Values> ? Generator<Values> : never;
 export type EnumEntries<TEnum extends EnumLike> =
-	TEnum extends EnumLike<infer Keys, infer Values> ? Generator<readonly [Keys, Values]> : never;
+	TEnum extends EnumLike<infer Keys>
+		? Generator<{ [K in Keys]: readonly [K, TEnum[K]] }[Keys]>
+		: never;

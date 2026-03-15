@@ -18,7 +18,7 @@ type AddMember<
 	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
 	TKey extends EnumKey,
 	TValue extends EnumValue,
-> = [...TCurrentEnumBuilderState, [TKey, TValue]];
+> = [...TCurrentEnumBuilderState, readonly [TKey, TValue]];
 
 type GetMostRecentEnumValue<TCurrentEnumBuilderState extends readonly EnumBuilderEntry[]> =
 	LastEntry<TCurrentEnumBuilderState>[1];
@@ -88,6 +88,7 @@ export default class BasicEnumBuilder<
 		//@ts-expect-error typescript limitation
 		this.#enumState[resolvedKey] = resolvedValue;
 
+		//@ts-expect-error typescript limitation
 		return this;
 	}
 
