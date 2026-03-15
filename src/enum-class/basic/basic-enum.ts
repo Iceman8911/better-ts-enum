@@ -17,6 +17,8 @@ interface NamespacedMethods<TEnumShape extends EnumLike> {
 	};
 }
 
+export type GetBasicEnumShape<TEnumShape extends EnumLike> = BasicEnum<TEnumShape> &
+	Readonly<TEnumShape>;
 
 export default class BasicEnum<const TEnumShape extends EnumLike> {
 	readonly #size: number;
@@ -35,8 +37,8 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 	 */
 	static new<const TEnumShape extends EnumLike>(
 		enumLike: TEnumShape,
-	): BasicEnum<TEnumShape> & Readonly<TEnumShape> {
-		return new BasicEnum(enumLike) as BasicEnum<TEnumShape> & Readonly<TEnumShape>;
+	): GetBasicEnumShape<TEnumShape> {
+		return new BasicEnum(enumLike) as GetBasicEnumShape<TEnumShape>;
 	}
 
 	//@ts-expect-error Inference Limitation
