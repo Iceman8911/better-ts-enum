@@ -23,11 +23,25 @@
 				"require": "./dist/basic-enum.cjs"
 			}
 		},
+		"./min/basic-enum": {
+			"import": {
+				"types": "./dist/min/basic-enum.d.ts",
+				"default": "./dist/min/basic-enum.js",
+				"require": "./dist/min/basic-enum.cjs"
+			}
+		},
 		"./arithmetic": {
 			"import": {
 				"types": "./dist/arithmetic.d.ts",
 				"default": "./dist/arithmetic.js",
 				"require": "./dist/arithmetic.cjs"
+			}
+		},
+		"./min/arithmetic": {
+			"import": {
+				"types": "./dist/min/arithmetic.d.ts",
+				"default": "./dist/min/arithmetic.js",
+				"require": "./dist/min/arithmetic.cjs"
 			}
 		},
 		"./package.json": "./package.json"
