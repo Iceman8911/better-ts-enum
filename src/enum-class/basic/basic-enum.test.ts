@@ -31,6 +31,10 @@ describe(BasicEnum.name, () => {
 		}).toThrow();
 	});
 
+	it("should have each value appropriated assigned to the right key", () => {
+		expect(testEnumArg).toEqual(testEnum);
+	});
+
 	it("should iterate over all explicit enum keys with $.keys in insertion order", () => {
 		const seenKeys: EnumKey[] = [];
 
