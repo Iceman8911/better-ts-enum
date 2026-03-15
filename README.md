@@ -1,17 +1,17 @@
-# betterenum
+# better-enum
 
 Yet another typescript enum replacement. It'll be good trust
 
 ## Installation
 
 ```bash
-bun add betterenum
+bun add @iceman8911/better-enum
 ```
 
 ## Usage
 
 ```typescript
-import { greet } from "betterenum";
+import { greet } from "better-enum";
 
 console.log(greet("World")); // Hello, World!
 ```

@@ -1,4 +1,4 @@
-# Contributing to betterenum
+# Contributing to better-enum
 
 Thank you for your interest in contributing to our project! This guide will help you get started with the development process.
 
@@ -55,4 +55,4 @@ Please be respectful and constructive in all interactions within our community.
 
 If you have any questions, please [open an issue](https://github.com/iceman8911/betternum/issues/new) for discussion.
 
-Thank you for contributing to betterenum!
+Thank you for contributing to better-enum!
