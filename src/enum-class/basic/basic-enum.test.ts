@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
 import BasicEnum from "./basic-enum";
-import type { EnumKey, EnumValue } from "../../types/enum-class/enum-class";
+import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 
 type TestEnumArg = typeof testEnumArg;
 type TestEnumArgKeys = keyof TestEnumArg;

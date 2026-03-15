@@ -1,9 +1,4 @@
-import type {
-	EnumEntries,
-	EnumKeys,
-	EnumLike,
-	EnumValues,
-} from "../../types/enum-class/enum-class";
+import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
 import type { UnionToTuple } from "type-fest";
 
 interface NamespacedMethods<TEnumShape extends EnumLike> {
