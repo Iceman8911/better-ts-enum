@@ -72,6 +72,11 @@ describe(BasicEnum.name, () => {
 		expect(testEnum.$.size).toBe(5);
 	});
 
+	it("should allow easy inference of the underlying enum type", () => {
+		expectTypeOf<typeof testEnum.$.infer.keys>().toExtend<TestEnumArgKeys>();
+		expectTypeOf<typeof testEnum.$.infer.values>().toExtend<TestEnumArgValues>();
+	});
+
 	it("should handle an empty enum", () => {
 		const emptyEnum = BasicEnum.new({});
 		expect([...emptyEnum.$.keys()]).toEqual([]);

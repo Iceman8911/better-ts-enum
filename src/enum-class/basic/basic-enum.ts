@@ -1,12 +1,22 @@
 import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
-import type { UnionToTuple } from "type-fest";
+import type { Simplify, UnionToTuple } from "type-fest";
 
 interface NamespacedMethods<TEnumShape extends EnumLike> {
 	keys(): EnumKeys<TEnumShape>;
 	values(): EnumValues<TEnumShape>;
 	entries(): EnumEntries<TEnumShape>;
 	size: UnionToTuple<keyof TEnumShape>["length"];
+
+	/** Solely for inferring the types of the enum.
+	 *
+	 * In truth, this is actually `undefined`
+	 */
+	infer: {
+		keys: Simplify<keyof TEnumShape>;
+		values: Simplify<TEnumShape[keyof TEnumShape]>;
+	};
 }
+
 
 export default class BasicEnum<const TEnumShape extends EnumLike> {
 	readonly #size: number;
