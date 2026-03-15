@@ -15,14 +15,12 @@
 		"dist"
 	],
 	"type": "module",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"exports": {
-		".": {
+		"./basic-enum": {
 			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js",
-				"require": "./dist/index.cjs"
+				"types": "./dist/basic-enum.d.ts",
+				"default": "./dist/basic-enum.js",
+				"require": "./dist/basic-enum.cjs"
 			}
 		},
 		"./arithmetic": {
