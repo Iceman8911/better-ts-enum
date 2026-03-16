@@ -1,28 +1,7 @@
 import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
 import type { ReadonlyDeep, Simplify, UnionToTuple } from "type-fest";
-
-interface NamespacedMethods<TEnumShape extends EnumLike> {
-	keys(): EnumKeys<TEnumShape>;
-	values(): EnumValues<TEnumShape>;
-	entries(): EnumEntries<TEnumShape>;
-
-	size: UnionToTuple<keyof TEnumShape>["length"];
-
-	isKey(arg: unknown): arg is NamespacedMethods<TEnumShape>["infer"]["keys"];
-	isValue(arg: unknown): arg is NamespacedMethods<TEnumShape>["infer"]["values"];
-
-	/** Solely for inferring the types of the enum.
-	 *
-	 * In truth, this is actually `undefined`
-	 */
-	infer: {
-		keys: Simplify<keyof TEnumShape>;
-		values: Simplify<TEnumShape[keyof TEnumShape]>;
-	};
-}
-
-export type GetBasicEnumShape<TEnumShape extends EnumLike> = BasicEnum<TEnumShape> &
-	Readonly<TEnumShape>;
+import type { _NamespacedMethods } from "../_shared";
+import type { _GetBasicEnumShape } from "./_shared";
 
 export default class BasicEnum<const TEnumShape extends EnumLike> {
 	readonly #size: number;
@@ -31,7 +10,7 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<NamespacedMethods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<_NamespacedMethods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape) {
 		Object.assign(this, enumLike);
@@ -40,7 +19,7 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 
 		const self = this;
 
-		const namespacedMethods: NamespacedMethods<TEnumShape> = {
+		const namespacedMethods: _NamespacedMethods<TEnumShape> = {
 			keys() {
 				return self.#keys();
 			},
@@ -73,7 +52,7 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 		Object.defineProperty(this, "$", {
 			value: namespacedMethods,
 			enumerable: false,
-			configurable: false,
+			configurable: true,
 			writable: false,
 		});
 
@@ -86,8 +65,8 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 	 */
 	static new<const TEnumShape extends EnumLike>(
 		enumLike: TEnumShape,
-	): GetBasicEnumShape<TEnumShape> {
-		return new BasicEnum(enumLike) as GetBasicEnumShape<TEnumShape>;
+	): _GetBasicEnumShape<TEnumShape> {
+		return new BasicEnum(enumLike) as _GetBasicEnumShape<TEnumShape>;
 	}
 
 	//@ts-expect-error Inference Limitation

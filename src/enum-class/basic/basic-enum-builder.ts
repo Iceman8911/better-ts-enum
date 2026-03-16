@@ -1,7 +1,8 @@
 import type { Simplify } from "type-fest";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import type { _IncrementNumberByOneStage } from "../../types/_utils";
-import BasicEnum, { type GetBasicEnumShape } from "./basic-enum";
+import BasicEnum from "./basic-enum";
+import type { _GetBasicEnumShape } from "./_shared";
 
 type EnumBuilderEntry<
 	TKey extends EnumKey = EnumKey,
@@ -122,7 +123,7 @@ export default class BasicEnumBuilder<
 	}
 
 	//@ts-expect-error The simplified type is much more readable
-	build(): GetBasicEnumShape<Simplify<FromEntries<TCurrentEnumBuilderState>>> {
+	build(): _GetBasicEnumShape<Simplify<FromEntries<TCurrentEnumBuilderState>>> {
 		return BasicEnum.new(this.#enumState);
 	}
 }
