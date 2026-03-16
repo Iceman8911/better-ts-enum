@@ -1,5 +1,5 @@
 type ReservedEnumKeys = "$";
-export type EnumKey = Exclude<string, ReservedEnumKeys>;
+export type EnumKey = Exclude<string | number, ReservedEnumKeys>;
 export type EnumValue = string | number;
 
 export type EnumLike<TKey extends EnumKey = EnumKey, TValue extends EnumValue = EnumValue> = Record<
