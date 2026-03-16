@@ -114,6 +114,50 @@ describe(BasicEnum.name, () => {
 		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
 	});
 
+	it("should infer nominal typing when nominal: true is set", () => {
+		const nominalEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: true });
+
+		expectTypeOf<typeof nominalEnum.BAR>().toExtend<2>();
+		expectTypeOf<2>().not.toExtend<typeof nominalEnum.BAR>();
+		//@ts-expect-error For Testing
+		expect(nominalEnum.BAR).toBe(2);
+
+		expectTypeOf<typeof nominalEnum.FOO>().toExtend<1>();
+		expectTypeOf<1>().not.toExtend<typeof nominalEnum.FOO>();
+		//@ts-expect-error For Testing
+		expect(nominalEnum.FOO).toBe(1);
+	});
+
+	it("should infer non-nominal typing when nominal: false (default)", () => {
+		const regularEnum = BasicEnum.new({ FOO: 1, BAR: 2 });
+
+		type Values = typeof regularEnum.$.infer.values;
+		const ok1: Values = 1;
+		const ok2: Values = 2;
+		expect(ok1).toBe(1);
+		expect(ok2).toBe(2);
+	});
+
+	it("should be readonly at type-level and frozen at runtime when freeze: true (default)", () => {
+		const frozenEnum = BasicEnum.new({ FOO: 1, BAR: 2 });
+
+		expect(() => {
+			//@ts-expect-error For testing
+			frozenEnum.BAR = 32;
+			//@ts-expect-error For testing
+			frozenEnum.FOO = "ds";
+		}).toThrow();
+
+		expect(Object.isFrozen(frozenEnum)).toBe(true);
+	});
+
+	it("should NOT be readonly at type-level and NOT frozen at runtime when freeze: false", () => {
+		const unfrozenEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { freeze: false });
+
+		unfrozenEnum.FOO = 1;
+		expect(Object.isFrozen(unfrozenEnum)).toBe(false);
+	});
+
 	it("should strip out the reverse-mapping of native numeric typescript enums", () => {
 		enum NativeEnum {
 			FOO,
