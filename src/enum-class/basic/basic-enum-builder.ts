@@ -42,17 +42,26 @@ export default class BasicEnumBuilder<
 	#enumState: FromEntries<TCurrentEnumBuilderState> = {};
 	#lastValue?: EnumValue;
 
-	/** Chainer for adding an enum member with an auto-incremented and inferred numeric value similar to native typescript enums. */
+	/** Chainer for adding an enum member with an auto-incremented and inferred numeric value similar to native typescript enums.
+	 *
+	 * @throws if the key has already been added previously
+	 */
 	$<
 		TKey extends EnumKey,
 		TValue extends EnumValue = GetNextDefaultNumberToUseAsEnumValue<TCurrentEnumBuilderState>,
 	>(key: TKey): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>>;
-	/** Chainer for adding an enum member with an explictly defined value. */
+	/** Chainer for adding an enum member with an explictly defined value.
+	 *
+	 * @throws if the key has already been added previously
+	 */
 	$<TKey extends EnumKey, TValue extends EnumValue>(
 		key: TKey,
 		value: TValue,
 	): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>>;
-	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums. */
+	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums.
+	 *
+	 * @throws if the key has already been added previously
+	 */
 	$<
 		TKey extends EnumKey,
 		TValue extends EnumValue = GetNextDefaultNumberToUseAsEnumValue<TCurrentEnumBuilderState>,
@@ -61,7 +70,10 @@ export default class BasicEnumBuilder<
 			enumSoFar: Simplify<FromEntries<TCurrentEnumBuilderState>>,
 		) => TKey | readonly [TKey, TValue],
 	): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>>;
-	/** Chainer for adding more enum members with maximum type safety */
+	/** Chainer for adding more enum members with maximum type safety.
+	 *
+	 * @throws if the key has already been added previously
+	 */
 	$<
 		TKey extends EnumKey,
 		TValue extends EnumValue = GetNextDefaultNumberToUseAsEnumValue<TCurrentEnumBuilderState>,
