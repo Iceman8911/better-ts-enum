@@ -111,7 +111,6 @@ export default class BasicEnumBuilder<
 
 	//@ts-expect-error The simplified type is much more readable
 	build(): GetBasicEnumShape<Simplify<FromEntries<TCurrentEnumBuilderState>>> {
-		//@ts-expect-error The simplified type is much more readable
 		return BasicEnum.new(this.#enumState);
 	}
 }

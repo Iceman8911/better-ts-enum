@@ -1,5 +1,5 @@
 import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
-import type { Simplify, UnionToTuple } from "type-fest";
+import type { ReadonlyDeep, Simplify, UnionToTuple } from "type-fest";
 
 interface NamespacedMethods<TEnumShape extends EnumLike> {
 	keys(): EnumKeys<TEnumShape>;
@@ -23,13 +23,35 @@ export type GetBasicEnumShape<TEnumShape extends EnumLike> = BasicEnum<TEnumShap
 export default class BasicEnum<const TEnumShape extends EnumLike> {
 	readonly #size: number;
 
+	/** Namespace for all class methods.
+	 *
+	 * This is used to prevent collisions with valid enum keys
+	 */
+	declare readonly $: ReadonlyDeep<NamespacedMethods<TEnumShape>>;
+
 	private constructor(enumLike: TEnumShape) {
 		Object.assign(this, enumLike);
 
 		this.#size = Object.keys(this).length;
 
+		const self = this;
+
+		//@ts-expect-error `infer` isn't a real property since it's soley for types
+		const namespacedMethods: NamespacedMethods<TEnumShape> = {
+			keys() {
+				return self.#keys();
+			},
+			entries() {
+				return self.#entries();
+			},
+			values() {
+				return self.#values();
+			},
+			size: self.#size,
+		};
+
 		Object.defineProperty(this, "$", {
-			value: this.$,
+			value: namespacedMethods,
 			enumerable: false,
 			configurable: false,
 			writable: false,
@@ -79,27 +101,5 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {
 		return this.#entries();
-	}
-
-	/** Namespace for all class methods.
-	 *
-	 * This is used to prevent collisions with valid enum keys
-	 */
-	get $(): NamespacedMethods<TEnumShape> {
-		const self = this;
-
-		//@ts-expect-error Inference Limitation
-		return {
-			keys() {
-				return self.#keys();
-			},
-			entries() {
-				return self.#entries();
-			},
-			values() {
-				return self.#values();
-			},
-			size: self.#size,
-		};
 	}
 }
