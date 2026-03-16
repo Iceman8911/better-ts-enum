@@ -5,7 +5,11 @@ interface NamespacedMethods<TEnumShape extends EnumLike> {
 	keys(): EnumKeys<TEnumShape>;
 	values(): EnumValues<TEnumShape>;
 	entries(): EnumEntries<TEnumShape>;
+
 	size: UnionToTuple<keyof TEnumShape>["length"];
+
+	isKey(arg: unknown): arg is NamespacedMethods<TEnumShape>["infer"]["keys"];
+	isValue(arg: unknown): arg is NamespacedMethods<TEnumShape>["infer"]["values"];
 
 	/** Solely for inferring the types of the enum.
 	 *
@@ -36,7 +40,6 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 
 		const self = this;
 
-		//@ts-expect-error `infer` isn't a real property since it's soley for types
 		const namespacedMethods: NamespacedMethods<TEnumShape> = {
 			keys() {
 				return self.#keys();
@@ -48,6 +51,23 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 				return self.#values();
 			},
 			size: self.#size,
+			//@ts-expect-error Typescript Limitation
+			isKey(arg) {
+				return `${arg}` in self && arg !== "$";
+			},
+			//@ts-expect-error Typescript Limitation
+			isValue(arg) {
+				let isPresent = false;
+
+				for (const value of self.#values()) {
+					if (value === arg) {
+						isPresent = true;
+						break;
+					}
+				}
+
+				return isPresent;
+			},
 		};
 
 		Object.defineProperty(this, "$", {
