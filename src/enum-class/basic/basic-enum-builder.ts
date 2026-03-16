@@ -90,6 +90,8 @@ export default class BasicEnumBuilder<
 		//@ts-expect-error typescript limitation
 		this.#enumState[resolvedKey] = resolvedValue;
 
+		this.#lastValue = resolvedValue;
+
 		//@ts-expect-error typescript limitation
 		return this;
 	}
