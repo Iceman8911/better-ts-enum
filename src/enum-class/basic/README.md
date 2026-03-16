@@ -77,10 +77,13 @@ const TestEnum = new BasicEnumBuilder()
 #### Computed Members
 
 ```typescript
+import { BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
+import { add, multiply } from "@iceman8911/better-ts-enum/arithmetic";
+
 const CompEnum = new BasicEnumBuilder()
 	.$("A", 1)
-	.$((e) => ["B", e.A + 1])
-	.$((e) => ["C", e.B * 2])
+	.$((e) => ["B", add(e.A, 1)])
+	.$((e) => ["C", multiply(e.B, 2)])
 	.build();
 // CompEnum.A === 1, CompEnum.B === 2, CompEnum.C === 4
 ```
@@ -124,6 +127,7 @@ type CompEnumValues = typeof CompEnum.$.infer.values; // 1 | 2 | 4
 For type-safe arithmetic in computed members, use helpers (see `arithmetic.ts`):
 
 ```typescript
+import { BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
 import { add, multiply } from "@iceman8911/better-ts-enum/arithmetic";
 
 const Enum = new BasicEnumBuilder()
