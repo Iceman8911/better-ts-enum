@@ -139,6 +139,6 @@ export function isNegative<A extends number>(a: A): TsArithmetic.IsNegative<A> {
  * Utility for explicit type-level casting.
  * Usage: asType<Add<typeof foo, typeof bar>>(foo + bar)
  */
-export function asType<T>(value: any): T {
+export function asType<T>(value: unknown): T {
 	return value as T;
 }

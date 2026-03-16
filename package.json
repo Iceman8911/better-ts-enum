@@ -15,33 +15,26 @@
 		"dist"
 	],
 	"type": "module",
+	"sideEffects": false,
 	"exports": {
 		"./basic-enum": {
 			"import": {
 				"types": "./dist/basic-enum.d.ts",
-				"default": "./dist/basic-enum.js",
-				"require": "./dist/basic-enum.cjs"
-			}
-		},
-		"./min/basic-enum": {
-			"import": {
-				"types": "./dist/min/basic-enum.d.ts",
-				"default": "./dist/min/basic-enum.js",
-				"require": "./dist/min/basic-enum.cjs"
+				"default": "./dist/basic-enum.js"
+			},
+			"require": {
+				"types": "./dist/basic-enum.d.cts",
+				"default": "./dist/basic-enum.cjs"
 			}
 		},
 		"./arithmetic": {
 			"import": {
 				"types": "./dist/arithmetic.d.ts",
-				"default": "./dist/arithmetic.js",
-				"require": "./dist/arithmetic.cjs"
-			}
-		},
-		"./min/arithmetic": {
-			"import": {
-				"types": "./dist/min/arithmetic.d.ts",
-				"default": "./dist/min/arithmetic.js",
-				"require": "./dist/min/arithmetic.cjs"
+				"default": "./dist/arithmetic.js"
+			},
+			"require": {
+				"types": "./dist/arithmetic.d.cts",
+				"default": "./dist/arithmetic.cjs"
 			}
 		},
 		"./package.json": "./package.json"
