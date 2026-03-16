@@ -76,6 +76,24 @@ describe(BasicEnum.name, () => {
 		expect(testEnum.$.size).toBe(5);
 	});
 
+	it("should work as a type guard for the enum's keys", () => {
+		const randomKey: unknown = "foo";
+
+		if (testEnum.$.isKey(randomKey)) {
+			expectTypeOf<typeof randomKey>().toEqualTypeOf<TestEnumArgKeys>();
+			expect(randomKey).toBe("foo");
+		}
+	});
+
+	it("should work as a type guard for the enum's values", () => {
+		const randomValue: unknown = 4.5;
+
+		if (testEnum.$.isValue(randomValue)) {
+			expectTypeOf<typeof randomValue>().toEqualTypeOf<TestEnumArgValues>();
+			expect(randomValue).toBe(4.5);
+		}
+	});
+
 	it("should allow easy inference of the underlying enum type", () => {
 		expectTypeOf<typeof testEnum.$.infer.keys>().toEqualTypeOf<TestEnumArgKeys>();
 		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
