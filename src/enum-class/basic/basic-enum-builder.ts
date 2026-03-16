@@ -18,7 +18,9 @@ type AddMember<
 	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
 	TKey extends EnumKey,
 	TValue extends EnumValue,
-> = [...TCurrentEnumBuilderState, readonly [TKey, TValue]];
+> = TKey extends TCurrentEnumBuilderState[number][0]
+	? never
+	: [...TCurrentEnumBuilderState, readonly [TKey, TValue]];
 
 type GetMostRecentEnumValue<TCurrentEnumBuilderState extends readonly EnumBuilderEntry[]> =
 	LastEntry<TCurrentEnumBuilderState>[1];
@@ -87,12 +89,15 @@ export default class BasicEnumBuilder<
 			resolvedValue = (value ?? this.#defaultEntryValue) as TValue;
 		}
 
+		if (resolvedKey in this.#enumState) {
+			throw new Error(`Duplicate enum key: ${resolvedKey}`);
+		}
+
 		//@ts-expect-error typescript limitation
 		this.#enumState[resolvedKey] = resolvedValue;
 
 		this.#lastValue = resolvedValue;
 
-		//@ts-expect-error typescript limitation
 		return this;
 	}
 
