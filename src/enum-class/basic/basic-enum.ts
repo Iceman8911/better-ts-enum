@@ -2,6 +2,7 @@ import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/en
 import type { ReadonlyDeep, Simplify, UnionToTuple } from "type-fest";
 import type { _NamespacedMethods } from "../_shared";
 import type { _GetBasicEnumShape } from "./_shared";
+import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
 
 export default class BasicEnum<const TEnumShape extends EnumLike> {
 	readonly #size: number;
@@ -13,7 +14,7 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 	declare readonly $: ReadonlyDeep<_NamespacedMethods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape) {
-		Object.assign(this, enumLike);
+		Object.assign(this, removeReverseMappingFromNumericEnum(enumLike));
 
 		this.#size = Object.keys(this).length;
 

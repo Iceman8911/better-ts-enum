@@ -114,6 +114,25 @@ describe(BasicEnum.name, () => {
 		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
 	});
 
+	it("should strip out the reverse-mapping of native numeric typescript enums", () => {
+		enum NativeEnum {
+			FOO,
+			BAR,
+			BAZ,
+		}
+
+		const convertedEnum = BasicEnum.new(NativeEnum);
+
+		expect([...convertedEnum.$.keys()]).toEqual(["FOO", "BAR", "BAZ"]);
+		expect([...convertedEnum.$.values()]).toEqual([NativeEnum.FOO, NativeEnum.BAR, NativeEnum.BAZ]);
+		expect([...convertedEnum.$.entries()]).toStrictEqual([
+			["FOO", NativeEnum.FOO],
+			["BAR", NativeEnum.BAR],
+			["BAZ", NativeEnum.BAZ],
+		]);
+		expect(convertedEnum.$.size).toBe(3);
+	});
+
 	it("should handle an empty enum", () => {
 		const emptyEnum = BasicEnum.new({});
 		expect([...emptyEnum.$.keys()]).toEqual([]);

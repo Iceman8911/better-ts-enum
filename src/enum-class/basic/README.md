@@ -28,6 +28,26 @@ const MyEnum = BasicEnum.new({ FOO: 1, BAR: 2, BAZ: "hello" });
 // MyEnum.BAZ === "hello"
 ```
 
+### Native Enum Wrapping
+
+NOTE: Reverse-mapping is explictly not supported to keep sensible behaviour for the iterator methods
+
+```ts
+import { BasicEnum } from "@iceman8911/better-ts-enum/basic-enum";
+
+enum NativeEnum {
+	FOO,
+	BAR,
+	BAZ,
+}
+
+const MyEnum = BasicEnum.new(NativeEnum);
+// MyEnum.FOO === 0
+// MyEnum.BAR === 1
+// MyEnum.BAZ === 2
+// Reverse-mapping has been removed so MyEnum[0] isn't legal
+```
+
 ### Type Inference
 
 ```typescript
