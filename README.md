@@ -1,4 +1,4 @@
-# better-enum
+# @iceman8911/better-ts-enum
 
 Yet another typescript enum replacement. It'll be good trust
 
