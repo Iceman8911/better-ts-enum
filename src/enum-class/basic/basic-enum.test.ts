@@ -35,6 +35,21 @@ describe(BasicEnum.name, () => {
 		expect(testEnumArg).toEqual(testEnum);
 	});
 
+	it("should not allow the namespace prop '$' to be assignable under normal means", () => {
+		const namespaceVal = testEnum.$;
+
+		try {
+			//@ts-expect-error Testing purposes
+			testEnum.$ = "foo";
+		} catch {}
+
+		expect(namespaceVal).toStrictEqual(testEnum.$);
+	});
+
+	it("should not iterate over the namespace prop '$'", () => {
+		expect([...testEnum.$.keys()]).not.toContain("$");
+	});
+
 	it("should iterate over all explicit enum keys with $.keys in insertion order", () => {
 		const seenKeys: EnumKey[] = [];
 
