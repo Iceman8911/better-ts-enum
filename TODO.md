@@ -1,0 +1,1 @@
+- [ ] Make duplicate enum key handling more strict and noticable via typescript.
