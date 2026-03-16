@@ -1,13 +1,56 @@
-import type { UnionToTuple, Simplify } from "type-fest";
+import type { UnionToTuple, Merge } from "type-fest";
 import type { EnumLike, EnumKeys, EnumValues, EnumEntries } from "../types/enum/enum-class";
 
-export type _SharedEnumClassConfig = Partial<{
-	/** If `true`, the enum instance is frozen with `Object.freeze()`
+export interface _SharedEnumClassConfig {
+	/** If `true`, the enum instance is frozen with `Object.freeze()` and it's enum values will be readonly.
+	 *
+	 * Now, this might sound useless, since enums are meant to be immutable, but it's used internally for derived classes of the `BasicEnum`. You likely won't ever need to touch this.
 	 *
 	 * @default true
 	 */
-	freezeEnum: boolean;
-}>;
+	freeze: boolean;
+
+	/** If `true`, all enum values are nominal instead of duck-typed, similar to native string enums.
+	 *
+	 * Has no runtime effect.
+	 *
+	 * @default false
+	 *
+	 * @example
+	 *	const testEnum = new TestEnum({ FOO: 1, BAR : "bar" }, { nominal: true });
+	 * type TestEnumValues = typeof testEnum.$.infer.values
+	 *
+	 * function showcaseNominal(val: TestEnumValues): TestEnumValues {
+	 * 	return val
+	 * }
+	 *
+	 * showcaseNominal(testEnum.FOO) // Good.
+	 * showcaseNominal(testEnum.BAR) // Good.
+	 * showcaseNominal(1) // Typescript error.
+	 * showcaseNominal("bar") // Typescript error.
+	 */
+	nominal: boolean;
+}
+
+export interface _DefaultSharedEnumClassConfig extends _SharedEnumClassConfig {
+	readonly freeze: true;
+	readonly nominal: false;
+}
+
+export const _DEFAULT_SHARED_ENUM_CLASS_CONFIG: _DefaultSharedEnumClassConfig = {
+	freeze: true,
+	nominal: false,
+};
+
+export type _GetUserEnumConfigAfterApplyingDefaults<
+	TReferenceConfig extends _SharedEnumClassConfig,
+	TDefaultConfig extends TReferenceConfig,
+	TUserConfig extends Partial<TReferenceConfig>,
+> = Merge<
+	TDefaultConfig,
+	/** This is so that defaults will be used 100% if no user config is provided */
+	TReferenceConfig extends TUserConfig ? {} : Required<TUserConfig>
+>;
 
 export interface _NamespacedMethods<TEnumShape extends EnumLike> {
 	keys(): EnumKeys<TEnumShape>;
@@ -24,7 +67,7 @@ export interface _NamespacedMethods<TEnumShape extends EnumLike> {
 	 * In truth, this is actually `undefined`
 	 */
 	infer: {
-		keys: Simplify<keyof TEnumShape>;
-		values: Simplify<TEnumShape[keyof TEnumShape]>;
+		keys: keyof TEnumShape;
+		values: TEnumShape[keyof TEnumShape];
 	};
 }
