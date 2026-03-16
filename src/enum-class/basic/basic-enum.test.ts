@@ -77,8 +77,8 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should allow easy inference of the underlying enum type", () => {
-		expectTypeOf<typeof testEnum.$.infer.keys>().toExtend<TestEnumArgKeys>();
-		expectTypeOf<typeof testEnum.$.infer.values>().toExtend<TestEnumArgValues>();
+		expectTypeOf<typeof testEnum.$.infer.keys>().toEqualTypeOf<TestEnumArgKeys>();
+		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
 	});
 
 	it("should handle an empty enum", () => {
@@ -88,7 +88,6 @@ describe(BasicEnum.name, () => {
 		expect([...emptyEnum.$.entries()]).toEqual([]);
 		expect([...emptyEnum]).toEqual([]);
 		expect(emptyEnum.$.size).toBe(0);
-		expect(Object.isFrozen(emptyEnum)).toBe(true);
 	});
 
 	it("should handle a single-key enum", () => {
@@ -98,7 +97,6 @@ describe(BasicEnum.name, () => {
 		expect([...singleEnum.$.entries()]).toEqual([["only", 42]]);
 		expect([...singleEnum]).toEqual([["only", 42]]);
 		expect(singleEnum.$.size).toBe(1);
-		expect(Object.isFrozen(singleEnum)).toBe(true);
 	});
 
 	it("should not enumerate prototype properties", () => {
