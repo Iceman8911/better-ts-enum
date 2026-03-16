@@ -1,27 +1,47 @@
 {
-	"name": "betterenum",
+	"name": "@iceman8911/better-ts-enum",
 	"version": "0.1.0",
-	"description": "Yet another typescript enum replacement. It'll be good trust",
-	"homepage": "https://github.com/iceman8911/betterenum#readme",
+	"description": "Yet another typescript enum replacement. Designed for minimal bundle size, maximum type-safety, and ergonomics.",
+	"homepage": "https://github.com/iceman8911/better-ts-enum#readme",
 	"bugs": {
-		"url": "https://github.com/iceman8911/betterenum/issues"
+		"url": "https://github.com/iceman8911/better-ts-enum/issues"
 	},
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/iceman8911/betterenum.git"
+		"url": "git+https://github.com/iceman8911/better-ts-enum.git"
 	},
 	"files": [
 		"dist"
 	],
 	"type": "module",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"exports": {
-		".": {
+		"./basic-enum": {
 			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
+				"types": "./dist/basic-enum.d.ts",
+				"default": "./dist/basic-enum.js",
+				"require": "./dist/basic-enum.cjs"
+			}
+		},
+		"./min/basic-enum": {
+			"import": {
+				"types": "./dist/min/basic-enum.d.ts",
+				"default": "./dist/min/basic-enum.js",
+				"require": "./dist/min/basic-enum.cjs"
+			}
+		},
+		"./arithmetic": {
+			"import": {
+				"types": "./dist/arithmetic.d.ts",
+				"default": "./dist/arithmetic.js",
+				"require": "./dist/arithmetic.cjs"
+			}
+		},
+		"./min/arithmetic": {
+			"import": {
+				"types": "./dist/min/arithmetic.d.ts",
+				"default": "./dist/min/arithmetic.js",
+				"require": "./dist/min/arithmetic.cjs"
 			}
 		},
 		"./package.json": "./package.json"
@@ -46,6 +66,7 @@
 		"oxlint": "^1.55.0",
 		"simple-git-hooks": "^2.13.1",
 		"ts-arithmetic": "^0.1.1",
+		"type-fest": "^5.4.4",
 		"typescript": "^5.9.3"
 	},
 	"peerDependencies": {
