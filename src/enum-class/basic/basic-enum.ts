@@ -7,13 +7,12 @@ import {
 	type _DefaultBasicEnumConfig,
 	type _GetBasicEnumShape,
 } from "./_shared";
-import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
 
 export default class BasicEnum<
 	const TEnumShape extends EnumLike,
 	const TConfig extends _BasicEnumConfig,
 > {
-	readonly #size: number;
+	readonly #size = 0;
 
 	/** Namespace for all class methods.
 	 *
@@ -24,9 +23,15 @@ export default class BasicEnum<
 	private constructor(enumLike: TEnumShape, config?: Partial<TConfig>) {
 		const { freeze }: _BasicEnumConfig = { ..._DEFAULT_BASIC_ENUM_CONFIG, ...config };
 
-		Object.assign(this, removeReverseMappingFromNumericEnum(enumLike));
-
-		this.#size = Object.keys(this).length;
+		for (const k in enumLike)
+			if (
+				Object.getOwnPropertyDescriptor(enumLike, k) &&
+				(isNaN(+k) || typeof enumLike[k] !== "string")
+			) {
+				//@ts-expect-error Inference Limitation
+				this[k] = enumLike[k];
+				this.#size++;
+			}
 
 		const self = this;
 
