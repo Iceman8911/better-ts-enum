@@ -48,6 +48,26 @@ export const _DEFAULT_SHARED_ENUM_CLASS_CONFIG: _DefaultSharedEnumClassConfig = 
 	nominal: "",
 };
 
+export interface _SharedEnumClassBuilderConfig extends _SharedEnumClassConfig {
+	/** Dictates the behaviour for auto-inferred enum values.
+	 *
+	 * - `number` - Uses an auto-incrementing number based off the most recent enum value, else it falls back to 0
+	 * - `key` - Uses the enum's key as it's value
+	 *
+	 * @default "number"
+	 */
+	valueType: "number" | "key";
+}
+
+export interface _DefaultSharedEnumClassBuilderConfig extends _DefaultSharedEnumClassConfig {
+	readonly valueType: "number";
+}
+
+export const _DEFAULT_SHARED_ENUM_CLASS_BUILDER_CONFIG: _DefaultSharedEnumClassBuilderConfig = {
+	..._DEFAULT_SHARED_ENUM_CLASS_CONFIG,
+	valueType: "number",
+};
+
 export type _GetUserEnumConfigAfterApplyingDefaults<
 	TReferenceConfig extends _SharedEnumClassConfig,
 	TDefaultConfig extends TReferenceConfig,
