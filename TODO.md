@@ -1,2 +1,8 @@
 - [ ] Make duplicate enum key handling more strict and noticable via typescript.
-- [ ] Add `FullEnum` with `.extend`, `.exclude`, `.map`, `.switch`, `.with`, and other useful enum helpers.
+- [ ] Add `FullEnum` with `.extend`, `.exclude`, `.map`, `.mapKeys`, `.mapValues`, `.match`, `.labelOf`, and other useful enum helpers.
+- [ ] Add a new config `autoValueType` with three values; `number` (default), `numberString`, `key`, which basically mean:
+  - `number` - Use an auto-incrementing number
+  - `numberString` - Like `number`, but the incremented number is then cast to a string
+  - `key` - Use the enum key as it's value.
+  - Why? Places where only string ids are accepted, but you don't necessarily care about what the id is (i.e. extension messaging ids.)
+- [ ] Add a method `$.obj` for retrieving a clone of the input object (without reverse mapping)
