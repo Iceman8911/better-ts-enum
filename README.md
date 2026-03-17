@@ -137,3 +137,22 @@ Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
 ## License
 
 MIT
+
+---
+
+## Comparison: better-ts-enum vs Alternatives
+
+| Feature / Pattern                     | Native TS Enum | `as const` Object | Union Type |                   **better-ts-enum**                    |
+| ------------------------------------- | :------------: | :---------------: | :--------: | :-----------------------------------------------------: |
+| **Type Inference**                    |      Good      |     Excellent     | Excellent  |                        Excellent                        |
+| **Runtime Cost**                      |   IIFE bloat   |   Plain Object    |    None    | Class Instance (optionally frozen with `Object.freeze`) |
+| **`--erasableSyntaxOnly` compatible** |       ❌       |        ✅         |     ✅     |                           ✅                            |
+| **Auto-increment**                    |       ✅       |        ❌         |     ❌     |                           ✅                            |
+| **Explicit/Computed Values**          |    Partial     |    ✅ (manual)    |     ❌     |                 ✅ (ergonomic builder)                  |
+| **Nominal Typing**                    |    Partial     |        ❌         |     ❌     |                    ✅ (configurable)                    |
+| **Reverse Mapping**                   |  ✅ (numeric)  |        ❌         |     ❌     |                     ❌ (by design)                      |
+| **Iteration**                         |    Awkward     |      Manual       |   Manual   |               Ergonomic (`$.keys()`, etc)               |
+| **Immutability**                      |    Partial     |  ✅ (`as const`)  |    N/A     |                  ✅ (default, opt-out)                  |
+| **Type Narrowing**                    |      Good      |     Excellent     | Excellent  |                        Excellent                        |
+
+---
