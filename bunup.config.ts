@@ -6,7 +6,8 @@ export default defineConfig([
 		entry: "src/*.ts",
 		format: ["esm", "cjs"],
 		exports: true,
-		packages: "external",
+		packages: "bundle",
+		dts: { resolve: true, splitting: true },
 		report: { brotli: true, gzip: true },
 	},
 	{
