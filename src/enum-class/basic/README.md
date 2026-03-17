@@ -45,12 +45,37 @@ MutableEnum.FOO = 42; // Allowed at runtime, but not recommended
 
 ---
 
+### Customizing Default Enum Values with `valueType`
+
+By default, `BasicEnumBuilder` assigns auto-incrementing numbers to enum members added without an explicit value (`valueType: "number"`).  
+You can instead use `valueType: "key"` to assign the enum key itself as the value (string).  
+This is useful for environments that require string-only IDs, such as extension messaging or schema validation.
+
+```typescript
+import { BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
+
+// Default: valueType = "number"
+const NumberEnum = BasicEnumBuilder.new().$("FOO").$("BAR").$("BAZ").build();
+// NumberEnum.FOO === 0, NumberEnum.BAR === 1, NumberEnum.BAZ === 2
+
+// Use valueType: "key" for string values
+const StringEnum = BasicEnumBuilder.new({ valueType: "key" }).$("FOO").$("BAR").$("BAZ").build();
+// StringEnum.FOO === "FOO", StringEnum.BAR === "BAR", StringEnum.BAZ === "BAZ"
+
+// You can still override the value explicitly:
+const MixedEnum = BasicEnumBuilder.new({ valueType: "key" }).$("FOO").$("BAR", 42).$("BAZ").build();
+// MixedEnum.FOO === "FOO", MixedEnum.BAR === 42, MixedEnum.BAZ === "BAZ"
+```
+
+---
+
 ## Config Options
 
-| Option  | Type    | Default | Description                                                                                                                                                                                                                                                                                                                      |
-| ------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| freeze  | boolean | `true`  | If `true`, the enum is deeply frozen (immutable). If `false`, it is mutable at runtime.                                                                                                                                                                                                                                          |
-| nominal | string  | `""`    | If non-empty, values are nominally typed (not assignable to raw numbers/strings). Use a unique tag per enum for strict type isolation. <br><br/><br>**Note:** Nominal typing is enforced only at the TypeScript type level and has no runtime effect. If you need to bypass nominal typing, you can use a type cast (see below). |
+| Option    | Type                | Default    | Description                                                                                                                                                                                                                                                                                                                      |
+| --------- | ------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| freeze    | boolean             | `true`     | If `true`, the enum is deeply frozen (immutable). If `false`, it is mutable at runtime.                                                                                                                                                                                                                                          |
+| nominal   | string              | `""`       | If non-empty, values are nominally typed (not assignable to raw numbers/strings). Use a unique tag per enum for strict type isolation. <br><br/><br>**Note:** Nominal typing is enforced only at the TypeScript type level and has no runtime effect. If you need to bypass nominal typing, you can use a type cast (see below). |
+| valueType | `"number" \| "key"` | `"number"` | Dictates the default value for enum members added without an explicit value:<br>- `"number"`: Uses an auto-incrementing number (like native enums).<br>- `"key"`: Uses the enum key as its value (string).<br>Useful for environments that require string-only IDs or for extension messaging.                                   |
 
 ---
 
