@@ -35,34 +35,14 @@ export default class BasicEnum<
 
 		const self = this;
 
+		//@ts-expect-error Inference Limitation
 		const namespacedMethods: _NamespacedMethods<TEnumShape> = {
-			keys() {
-				return self.#keys();
-			},
-			entries() {
-				return self.#entries();
-			},
-			values() {
-				return self.#values();
-			},
+			keys: self.#keys.bind(self),
+			entries: self.#entries.bind(self),
+			values: self.#values.bind(self),
 			size: self.#size,
-			//@ts-expect-error Typescript Limitation
-			isKey(arg) {
-				return `${arg}` in self && arg !== "$";
-			},
-			//@ts-expect-error Typescript Limitation
-			isValue(arg) {
-				let isPresent = false;
-
-				for (const value of self.#values()) {
-					if (value === arg) {
-						isPresent = true;
-						break;
-					}
-				}
-
-				return isPresent;
-			},
+			isKey: self.#isKey.bind(self),
+			isValue: self.#isValue.bind(self),
 		};
 
 		Object.defineProperty(this, "$", {
@@ -117,6 +97,23 @@ export default class BasicEnum<
 			//@ts-expect-error Inference Limitation
 			yield [key, this[key]];
 		}
+	}
+
+	#isKey(arg: unknown): arg is _NamespacedMethods<TEnumShape>["infer"]["keys"] {
+		return `${arg}` in self && arg !== "$";
+	}
+
+	#isValue(arg: unknown): arg is _NamespacedMethods<TEnumShape>["infer"]["values"] {
+		let isPresent = false;
+
+		for (const value of this.#values()) {
+			if (value === arg) {
+				isPresent = true;
+				break;
+			}
+		}
+
+		return isPresent;
 	}
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {
