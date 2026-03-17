@@ -70,7 +70,15 @@ export interface _SharedNamespacedMethods<TEnumShape extends EnumLike> {
 
 	/** Solely for inferring the types of the enum.
 	 *
-	 * In truth, this is actually `undefined`
+	 * Calling this in runtime code will throw.
+	 *
+	 * @throws if called in runtime code
+	 *
+	 * @example
+	 *
+	 * type EnumValues = typeof testEnum.$.infer.values; // GOOD
+	 *
+	 * const EnumValues = testEnum.$.infer.values; // BAD, and throws
 	 */
 	infer: {
 		keys: keyof TEnumShape;

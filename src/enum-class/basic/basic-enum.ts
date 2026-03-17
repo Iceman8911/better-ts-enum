@@ -36,7 +36,6 @@ export default class BasicEnum<
 
 		const self = this;
 
-		//@ts-expect-error Inference Limitation
 		const namespacedMethods: _BasicEnumNamespacedMethods<TEnumShape> = {
 			keys: self.#keys.bind(self),
 			entries: self.#entries.bind(self),
@@ -44,6 +43,10 @@ export default class BasicEnum<
 			size: self.#size,
 			isKey: self.#isKey.bind(self),
 			isValue: self.#isValue.bind(self),
+			//@ts-expect-error Inference Limitation
+			get infer() {
+				self.#infer;
+			},
 		};
 
 		Object.defineProperty(this, "$", {
@@ -115,6 +118,10 @@ export default class BasicEnum<
 		}
 
 		return isPresent;
+	}
+
+	get #infer() {
+		throw Error("`this.#infer` is a type-only property. Do not call it in runtime code.");
 	}
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {

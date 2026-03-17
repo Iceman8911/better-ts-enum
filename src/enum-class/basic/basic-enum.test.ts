@@ -114,6 +114,12 @@ describe(BasicEnum.name, () => {
 		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
 	});
 
+	it("should throw upon accessing `$.infer` since it's a type-only construct", () => {
+		expect(() => testEnum.$.infer).toThrow();
+		expect(() => testEnum.$.infer.keys).toThrow();
+		expect(() => testEnum.$.infer.values).toThrow();
+	});
+
 	it("should infer nominal typing when nominal: true is set", () => {
 		const nominalEnum1 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal1" });
 		const nominalEnum2 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal2" });
