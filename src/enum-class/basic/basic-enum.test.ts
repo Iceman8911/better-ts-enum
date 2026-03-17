@@ -180,6 +180,20 @@ describe(BasicEnum.name, () => {
 		expect(convertedEnum.$.size).toBe(3);
 	});
 
+	it("should serialize to a deep copy of the plain object that instantiated it", () => {
+		const serialized = JSON.stringify(testEnum);
+		const deserialized = JSON.parse(serialized);
+
+		expect(deserialized).toStrictEqual(testEnumArg);
+	});
+
+	it("should deeply equal a new instance instantiated from it's serialization + deserialization", () => {
+		const serialized = JSON.stringify(testEnum);
+		const deserialized = JSON.parse(serialized);
+
+		expect(BasicEnum.new(deserialized)).toStrictEqual(testEnum);
+	});
+
 	it("should handle an empty enum", () => {
 		const emptyEnum = BasicEnum.new({});
 		expect([...emptyEnum.$.keys()]).toEqual([]);
