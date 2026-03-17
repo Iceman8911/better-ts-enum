@@ -135,7 +135,7 @@ export default class BasicEnumBuilder<
 	}
 
 	get #defaultEntryValue() {
-		if (this.#lastValue == null || typeof this.#lastValue === "string") {
+		if (typeof this.#lastValue !== "number") {
 			return 0;
 		}
 

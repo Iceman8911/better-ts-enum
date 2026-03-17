@@ -58,19 +58,27 @@ export type _GetUserEnumConfigAfterApplyingDefaults<
 	TReferenceConfig extends TUserConfig ? {} : Required<TUserConfig>
 >;
 
-export interface _NamespacedMethods<TEnumShape extends EnumLike> {
+export interface _SharedNamespacedMethods<TEnumShape extends EnumLike> {
 	keys(): EnumKeys<TEnumShape>;
 	values(): EnumValues<TEnumShape>;
 	entries(): EnumEntries<TEnumShape>;
 
 	size: UnionToTuple<keyof TEnumShape>["length"];
 
-	isKey(arg: unknown): arg is _NamespacedMethods<TEnumShape>["infer"]["keys"];
-	isValue(arg: unknown): arg is _NamespacedMethods<TEnumShape>["infer"]["values"];
+	isKey(arg: unknown): arg is _SharedNamespacedMethods<TEnumShape>["infer"]["keys"];
+	isValue(arg: unknown): arg is _SharedNamespacedMethods<TEnumShape>["infer"]["values"];
 
 	/** Solely for inferring the types of the enum.
 	 *
-	 * In truth, this is actually `undefined`
+	 * Calling this in runtime code will throw.
+	 *
+	 * @throws if called in runtime code
+	 *
+	 * @example
+	 *
+	 * type EnumValues = typeof testEnum.$.infer.values; // GOOD
+	 *
+	 * const EnumValues = testEnum.$.infer.values; // BAD, and throws
 	 */
 	infer: {
 		keys: keyof TEnumShape;

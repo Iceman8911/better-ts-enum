@@ -1,62 +1,51 @@
 import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
-import type { _GetUserEnumConfigAfterApplyingDefaults, _NamespacedMethods } from "../_shared";
+import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
 import {
 	_DEFAULT_BASIC_ENUM_CONFIG,
 	type _BasicEnumConfig,
+	type _BasicEnumNamespacedMethods,
 	type _DefaultBasicEnumConfig,
 	type _GetBasicEnumShape,
 } from "./_shared";
-import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
 
 export default class BasicEnum<
 	const TEnumShape extends EnumLike,
 	const TConfig extends _BasicEnumConfig,
 > {
-	readonly #size: number;
+	readonly #size = 0;
 
 	/** Namespace for all class methods.
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<_NamespacedMethods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<_BasicEnumNamespacedMethods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, config?: Partial<TConfig>) {
 		const { freeze }: _BasicEnumConfig = { ..._DEFAULT_BASIC_ENUM_CONFIG, ...config };
 
-		Object.assign(this, removeReverseMappingFromNumericEnum(enumLike));
-
-		this.#size = Object.keys(this).length;
+		for (const k in enumLike)
+			if (
+				Object.getOwnPropertyDescriptor(enumLike, k) &&
+				(isNaN(+k) || typeof enumLike[k] !== "string")
+			) {
+				//@ts-expect-error Inference Limitation
+				this[k] = enumLike[k];
+				this.#size++;
+			}
 
 		const self = this;
 
-		const namespacedMethods: _NamespacedMethods<TEnumShape> = {
-			keys() {
-				return self.#keys();
-			},
-			entries() {
-				return self.#entries();
-			},
-			values() {
-				return self.#values();
-			},
+		const namespacedMethods: _BasicEnumNamespacedMethods<TEnumShape> = {
+			keys: self.#keys.bind(self),
+			entries: self.#entries.bind(self),
+			values: self.#values.bind(self),
 			size: self.#size,
-			//@ts-expect-error Typescript Limitation
-			isKey(arg) {
-				return `${arg}` in self && arg !== "$";
-			},
-			//@ts-expect-error Typescript Limitation
-			isValue(arg) {
-				let isPresent = false;
-
-				for (const value of self.#values()) {
-					if (value === arg) {
-						isPresent = true;
-						break;
-					}
-				}
-
-				return isPresent;
+			isKey: self.#isKey.bind(self),
+			isValue: self.#isValue.bind(self),
+			//@ts-expect-error Inference Limitation
+			get infer() {
+				self.#infer;
 			},
 		};
 
@@ -112,6 +101,27 @@ export default class BasicEnum<
 			//@ts-expect-error Inference Limitation
 			yield [key, this[key]];
 		}
+	}
+
+	#isKey(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
+		return `${arg}` in self && arg !== "$";
+	}
+
+	#isValue(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
+		let isPresent = false;
+
+		for (const value of this.#values()) {
+			if (value === arg) {
+				isPresent = true;
+				break;
+			}
+		}
+
+		return isPresent;
+	}
+
+	get #infer() {
+		throw Error("`this.#infer` is a type-only property. Do not call it in runtime code.");
 	}
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {

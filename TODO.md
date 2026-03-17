@@ -1,1 +1,2 @@
 - [ ] Make duplicate enum key handling more strict and noticable via typescript.
+- [ ] Add `FullEnum` with `.extend`, `.exclude`, `.map`, `.switch`, `.with`, and other useful enum helpers.

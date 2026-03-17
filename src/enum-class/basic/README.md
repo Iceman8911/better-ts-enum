@@ -47,10 +47,10 @@ MutableEnum.FOO = 42; // Allowed at runtime, but not recommended
 
 ## Config Options
 
-| Option  | Type    | Default | Description                                                                                                                            |
-| ------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| freeze  | boolean | `true`  | If `true`, the enum is deeply frozen (immutable). If `false`, it is mutable at runtime.                                                |
-| nominal | string  | `""`    | If non-empty, values are nominally typed (not assignable to raw numbers/strings). Use a unique tag per enum for strict type isolation. |
+| Option  | Type    | Default | Description                                                                                                                                                                                                                                                                                                                      |
+| ------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| freeze  | boolean | `true`  | If `true`, the enum is deeply frozen (immutable). If `false`, it is mutable at runtime.                                                                                                                                                                                                                                          |
+| nominal | string  | `""`    | If non-empty, values are nominally typed (not assignable to raw numbers/strings). Use a unique tag per enum for strict type isolation. <br><br/><br>**Note:** Nominal typing is enforced only at the TypeScript type level and has no runtime effect. If you need to bypass nominal typing, you can use a type cast (see below). |
 
 ---
 
@@ -194,6 +194,15 @@ type CompEnumValues = typeof CompEnum.$.infer.values; // 1 | 2 | 4
 - **TypeScript Arithmetic:** TypeScript widens arithmetic results to `number`. Use helper functions or explicit casts for computed numeric values if you want to preserve literal types.
 - **No Reverse Mapping:** If you need value-to-key mapping, implement it manually.
 - **Nominal Typing:** When `nominal` is set (non-empty string), enum values are not assignable to raw numbers/strings—enforced at the type level.
+  **Nominal typing is purely for TypeScript type safety and has no runtime effect.** If you need to treat a nominal value as its underlying type, you can use a type cast:
+
+  ```typescript
+  // Example: bypassing nominal typing
+  const value = NominalEnum.FOO as unknown as number; // or as string, depending on the underlying type
+  // Or, for a custom nominal tag:
+  const value = {} as { nominal: "YetAnotherNominalEnum" };
+  ```
+
 - **Mutability:** By default, enums are frozen. If you set `{ freeze: false }`, you can mutate the enum at runtime (not recommended for most use cases).
 
 ---

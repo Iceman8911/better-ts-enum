@@ -114,6 +114,12 @@ describe(BasicEnum.name, () => {
 		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
 	});
 
+	it("should throw upon accessing `$.infer` since it's a type-only construct", () => {
+		expect(() => testEnum.$.infer).toThrow();
+		expect(() => testEnum.$.infer.keys).toThrow();
+		expect(() => testEnum.$.infer.values).toThrow();
+	});
+
 	it("should infer nominal typing when nominal: true is set", () => {
 		const nominalEnum1 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal1" });
 		const nominalEnum2 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal2" });
@@ -178,6 +184,20 @@ describe(BasicEnum.name, () => {
 			["BAZ", NativeEnum.BAZ],
 		]);
 		expect(convertedEnum.$.size).toBe(3);
+	});
+
+	it("should serialize to a deep copy of the plain object that instantiated it", () => {
+		const serialized = JSON.stringify(testEnum);
+		const deserialized = JSON.parse(serialized);
+
+		expect(deserialized).toStrictEqual(testEnumArg);
+	});
+
+	it("should deeply equal a new instance instantiated from it's serialization + deserialization", () => {
+		const serialized = JSON.stringify(testEnum);
+		const deserialized = JSON.parse(serialized);
+
+		expect(BasicEnum.new(deserialized)).toStrictEqual(testEnum);
 	});
 
 	it("should handle an empty enum", () => {
