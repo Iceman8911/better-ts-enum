@@ -7,10 +7,9 @@ export type EnumLike<TKey extends EnumKey = EnumKey, TValue extends EnumValue = 
 	TKey,
 	TValue
 >;
-export type NominalizeEnumLike<
-	TEnumLike extends EnumLike,
-	TNominalTag extends string = "nominal-enum",
-> = { [K in keyof TEnumLike]: Tagged<TEnumLike[K], TNominalTag> };
+export type NominalizeEnumLike<TEnumLike extends EnumLike, TNominalTag extends string> = {
+	[K in keyof TEnumLike]: Tagged<TEnumLike[K], TNominalTag>;
+};
 
 export type EnumKeys<TEnum extends EnumLike> =
 	TEnum extends EnumLike<infer Keys> ? Generator<Keys> : never;

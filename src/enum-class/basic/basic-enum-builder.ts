@@ -53,11 +53,11 @@ export default class BasicEnumBuilder<
 	/**
 	 * Static factory for partial config inference with defaults.
 	 */
-	static new<TUserConfig extends Partial<_BasicEnumConfig>>(
-		config?: TUserConfig,
+	static new<const TConfig extends Partial<_BasicEnumConfig>>(
+		config?: TConfig,
 	): BasicEnumBuilder<
 		[],
-		_GetUserEnumConfigAfterApplyingDefaults<_BasicEnumConfig, _DefaultBasicEnumConfig, TUserConfig>
+		_GetUserEnumConfigAfterApplyingDefaults<_BasicEnumConfig, _DefaultBasicEnumConfig, TConfig>
 	> {
 		//@ts-expect-error Inference limitation
 		return new BasicEnumBuilder(config);

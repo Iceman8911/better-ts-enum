@@ -10,15 +10,19 @@ export interface _SharedEnumClassConfig {
 	 */
 	freeze: boolean;
 
-	/** If `true`, all enum values are nominal instead of duck-typed, similar to native string enums.
+	/** If set to a non-empty string, all enum values are nominal instead of duck-typed, similar to native string enums.
+	 *
+	 * Enum values are only regarded as the same if they originate from the same enum (i.e, they have the same value of `nominal`).
 	 *
 	 * Has no runtime effect.
 	 *
-	 * @default false
+	 * @default ""
 	 *
 	 * @example
-	 *	const testEnum = new TestEnum({ FOO: 1, BAR : "bar" }, { nominal: true });
+	 *	const testEnum = new TestEnum({ FOO: 1, BAR : "bar" }, { nominal: "testEnum" });
 	 * type TestEnumValues = typeof testEnum.$.infer.values
+	 *
+	 *	const testEnum2 = new TestEnum({ FOO: 1, BAR : "bar" }, { nominal: "testEnum2" });
 	 *
 	 * function showcaseNominal(val: TestEnumValues): TestEnumValues {
 	 * 	return val
@@ -28,18 +32,20 @@ export interface _SharedEnumClassConfig {
 	 * showcaseNominal(testEnum.BAR) // Good.
 	 * showcaseNominal(1) // Typescript error.
 	 * showcaseNominal("bar") // Typescript error.
+	 * showcaseNominal(testEnum2.FOO) // Typescript error.
+	 * showcaseNominal(testEnum2.FOO) // Typescript error.
 	 */
-	nominal: boolean;
+	nominal: string;
 }
 
 export interface _DefaultSharedEnumClassConfig extends _SharedEnumClassConfig {
 	readonly freeze: true;
-	readonly nominal: false;
+	readonly nominal: "";
 }
 
 export const _DEFAULT_SHARED_ENUM_CLASS_CONFIG: _DefaultSharedEnumClassConfig = {
 	freeze: true,
-	nominal: false,
+	nominal: "",
 };
 
 export type _GetUserEnumConfigAfterApplyingDefaults<

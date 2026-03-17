@@ -115,17 +115,20 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should infer nominal typing when nominal: true is set", () => {
-		const nominalEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: true });
+		const nominalEnum1 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal1" });
+		const nominalEnum2 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal2" });
 
-		expectTypeOf<typeof nominalEnum.BAR>().toExtend<2>();
-		expectTypeOf<2>().not.toExtend<typeof nominalEnum.BAR>();
+		expectTypeOf<typeof nominalEnum1.BAR>().toExtend<2>();
+		expectTypeOf<2>().not.toExtend<typeof nominalEnum1.BAR>();
 		//@ts-expect-error For Testing
-		expect(nominalEnum.BAR).toBe(2);
+		expect(nominalEnum1.BAR).toBe(2);
 
-		expectTypeOf<typeof nominalEnum.FOO>().toExtend<1>();
-		expectTypeOf<1>().not.toExtend<typeof nominalEnum.FOO>();
+		expectTypeOf<typeof nominalEnum1.FOO>().toExtend<1>();
+		expectTypeOf<1>().not.toExtend<typeof nominalEnum1.FOO>();
 		//@ts-expect-error For Testing
-		expect(nominalEnum.FOO).toBe(1);
+		expect(nominalEnum1.FOO).toBe(1);
+
+		expectTypeOf<typeof nominalEnum1.BAR>().not.toEqualTypeOf<typeof nominalEnum2.BAR>();
 	});
 
 	it("should infer non-nominal typing when nominal: false (default)", () => {

@@ -32,9 +32,11 @@ const MyEnum = BasicEnum.new({ FOO: 1, BAR: 2, BAZ: "hello" });
 #### With Config (nominal/freeze)
 
 ```typescript
-// Nominal typing (values are not assignable to raw numbers/strings)
-const NominalEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: true });
-// typeof NominalEnum.FOO is a unique nominal type, not just 1
+// Nominal typing (values are not assignable to raw numbers/strings or other enums)
+const NominalEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "enum1" });
+const NominalEnum2 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "enum2" });
+// typeof NominalEnum.FOO is a unique nominal type, not just 1. Same gos for NominalEnum2
+// NominalEnum.FOO != NominalEnum2.FOO (typewise, not valuewise)
 
 // Mutable enum (not frozen, can be reassigned at runtime)
 const MutableEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { freeze: false });
@@ -113,7 +115,7 @@ const TestEnum = BasicEnumBuilder.new()
 ```typescript
 // Nominal typing (values are not assignable to raw numbers/strings)
 // NominalEnum.FOO and 1 are not the same from the type system's view
-const NominalEnum = BasicEnumBuilder.new({ nominal: true }).$("FOO", 1).$("BAR", 2).build();
+const NominalEnum = BasicEnumBuilder.new({ nominal: "enum1" }).$("FOO", 1).$("BAR", 2).build();
 
 // Mutable enum (not frozen, can be reassigned at runtime)
 const MutableEnum = BasicEnumBuilder.new({ freeze: false }).$("FOO", 1).$("BAR", 2).build();

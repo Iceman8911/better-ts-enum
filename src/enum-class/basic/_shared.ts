@@ -6,7 +6,7 @@ import type BasicEnum from "./basic-enum";
 type _GetNominalOrRegularEnumShape<
 	TEnumShape extends EnumLike,
 	TConfig extends _BasicEnumConfig,
-> = TConfig["nominal"] extends true ? NominalizeEnumLike<TEnumShape> : TEnumShape;
+> = TConfig["nominal"] extends "" ? TEnumShape : NominalizeEnumLike<TEnumShape, TConfig["nominal"]>;
 type _GetFrozenOrRegularEnumShape<
 	TEnumShape extends EnumLike,
 	TConfig extends _BasicEnumConfig,
@@ -22,7 +22,7 @@ export interface _BasicEnumConfig extends _SharedEnumClassConfig {}
 
 export interface _DefaultBasicEnumConfig extends _BasicEnumConfig {
 	readonly freeze: true;
-	readonly nominal: false;
+	readonly nominal: "";
 }
 
 export const _DEFAULT_BASIC_ENUM_CONFIG: _DefaultBasicEnumConfig = {
