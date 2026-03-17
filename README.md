@@ -51,6 +51,51 @@ yarn add @iceman8911/better-ts-enum
 
 ---
 
+## Serialization
+
+Enum instances are serializable out of the box with `JSON.stringify`. The result is always a deep copy of the plain object that was used to instantiate the enum (with reverse-mapping removed for native TypeScript enums). This makes it easy to persist, transmit, or compare enum instances.
+
+**Example:**
+
+```typescript
+const MyEnum = BasicEnum.new({ FOO: 1, BAR: 2, BAZ: "hello" });
+console.log(JSON.stringify(MyEnum)); // '{"FOO":1,"BAR":2,"BAZ":"hello"}'
+```
+
+- The output of `JSON.stringify(enumInstance)` is always identical to `JSON.stringify(inputObject)` (aside from reverse-mapping removal for native enums).
+
+---
+
+## Common Use Cases
+
+### Schema Validation with `$.raw`
+
+When integrating with validation libraries (like [valibot](https://valibot.dev/), Zod, or similar), you often need a plain object representation of your enum for use in schema definitions. The `$.raw` property provides a shallow copy of the original enum shape, stripped of any reverse-mapping (for native enums) and methods.
+
+**Example: Using with valibot**
+
+```typescript
+import { BasicEnum } from "@iceman8911/better-ts-enum/basic-enum";
+import { object, string, enum, parse } from "valibot";
+
+const StatusEnum = BasicEnum.new({ ACTIVE: "active", INACTIVE: "inactive" });
+
+// Use $.raw for schema validation
+const schema = object({
+  status: enum(StatusEnum.$.raw),
+});
+
+parse(schema, ({ status: "active" })); // ✅
+parse(schema, { status: "inactive" })); // ✅
+parse(schema, { status: "other" })); // ❌ Throws validation error
+```
+
+**Why use `$.raw`?**
+
+Validation libraries and similar will likely flag an error if you use the instance directly, so this should help.
+
+---
+
 ### Usage Examples
 
 #### ESM (Node/modern bundlers)
@@ -137,6 +182,52 @@ Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
 ## License
 
 MIT
+
+---
+
+## API Reference
+
+### `$.raw` – Accessing the Raw Enum Shape
+
+**Serialization:**
+Enum instances are serializable by `JSON.stringify` out of the box. The result is always a deep copy of the original input object (with reverse-mapping removed for native enums). This means `JSON.stringify(enumInstance)` is equivalent to `JSON.stringify(inputObject)`.
+
+The `$.raw` property returns a shallow copy of the enum's original shape, suitable for use in validation libraries, or any context where a plain object is required.
+
+- **For object-literal enums:** Returns a shallow copy of the original object.
+- **For native TypeScript enums:** Returns a copy with reverse-mapping removed (numeric enums lose their value-to-key mapping).
+- **Methods and internal properties are excluded.**
+
+**Example:**
+
+```typescript
+const MyEnum = BasicEnum.new({ FOO: 1, BAR: 2, BAZ: "hello" });
+console.log(MyEnum.$.raw); // { FOO: 1, BAR: 2, BAZ: "hello" }
+```
+
+**Native Enum Example:**
+
+```typescript
+enum NativeEnum {
+	FOO,
+	BAR,
+	BAZ,
+}
+const Wrapped = BasicEnum.new(NativeEnum);
+console.log(Wrapped.$.raw); // { FOO: 0, BAR: 1, BAZ: 2 }
+console.log(Wrapped.$.raw[0]); // undefined (reverse-mapping removed)
+```
+
+**Use Cases:**
+
+- Schema validation (valibot, Zod, etc.)
+- Interop with libraries expecting plain objects
+
+**Caveats:**
+
+- For native numeric enums, reverse-mapping is intentionally stripped for safety and predictability.
+- The returned object is a shallow copy; mutating it does not affect the enum instance.
+- TypeScript type inference is preserved: `typeof MyEnum.$.raw` matches your enum's shape.
 
 ---
 

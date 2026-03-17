@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
 import BasicEnum from "./basic-enum";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
+import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
 
 type TestEnumArg = typeof testEnumArg;
 type TestEnumArgKeys = keyof TestEnumArg;
@@ -184,6 +185,27 @@ describe(BasicEnum.name, () => {
 			["BAZ", NativeEnum.BAZ],
 		]);
 		expect(convertedEnum.$.size).toBe(3);
+	});
+
+	it("should return a shallow copy of the original input, aside from removing reverse-mapping", () => {
+		expect(testEnum.$.raw).toStrictEqual(testEnumArg);
+		expectTypeOf(testEnum.$.raw).toEqualTypeOf(testEnumArg);
+
+		enum ReverseMappedNativeEnum {
+			FOO,
+			BAR,
+			BAZ,
+		}
+
+		const strippedEnumInstance = BasicEnum.new(ReverseMappedNativeEnum);
+
+		expect(strippedEnumInstance.$.raw).not.toStrictEqual(ReverseMappedNativeEnum);
+		expect(strippedEnumInstance.$.raw).toStrictEqual(
+			removeReverseMappingFromNumericEnum(ReverseMappedNativeEnum),
+		);
+		expectTypeOf(strippedEnumInstance.$.raw).toEqualTypeOf(
+			removeReverseMappingFromNumericEnum(ReverseMappedNativeEnum),
+		);
 	});
 
 	it("should serialize to a deep copy of the plain object that instantiated it", () => {

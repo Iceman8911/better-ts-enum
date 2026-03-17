@@ -129,4 +129,45 @@ describe(BasicEnumBuilder.name, () => {
 		unfrozenEnum.FOO = 1;
 		expect(Object.isFrozen(unfrozenEnum)).toBe(false);
 	});
+
+	it("should use auto-incrementing numbers as default enum values when valueType: 'number' or is absent", () => {
+		const numberEnum = BasicEnumBuilder.new().$("foo").$("bar").$("baz").$("foobar").build();
+		const numberEnum2 = BasicEnumBuilder.new({ valueType: "number" })
+			.$("foo")
+			.$("bar")
+			.$("baz")
+			.$("foobar")
+			.build();
+
+		expect(numberEnum.$.raw).toStrictEqual({ foo: 0, bar: 1, baz: 2, foobar: 3 });
+		expect(numberEnum).toStrictEqual(numberEnum2);
+		expectTypeOf(numberEnum).toEqualTypeOf(numberEnum2);
+	});
+
+	it("should use enum keys as default enum values when valueType: 'key'", () => {
+		const numberEnum = BasicEnumBuilder.new({ valueType: "key" })
+			.$("foo")
+			.$("bar")
+			.$("baz")
+			.$("foobar")
+			.build();
+
+		expect(numberEnum.$.raw).toStrictEqual({
+			foo: "foo",
+			bar: "bar",
+			baz: "baz",
+			foobar: "foobar",
+		});
+	});
+
+	it("should allow explicit values to override valueType: 'key'", () => {
+		const mixedEnum = BasicEnumBuilder.new({ valueType: "key" })
+			.$("foo")
+			.$("bar", 42)
+			.$("baz")
+			.build();
+		expect(mixedEnum.foo).toBe("foo");
+		expect(mixedEnum.bar).toBe(42);
+		expect(mixedEnum.baz).toBe("baz");
+	});
 });

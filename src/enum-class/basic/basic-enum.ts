@@ -2,16 +2,16 @@ import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/en
 import type { ReadonlyDeep } from "type-fest";
 import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
 import {
-	_DEFAULT_BASIC_ENUM_CONFIG,
-	type _BasicEnumConfig,
+	_DEFAULT_BASIC_ENUM_CLASS_CONFIG,
+	type _BasicEnumClassConfig,
 	type _BasicEnumNamespacedMethods,
-	type _DefaultBasicEnumConfig,
+	type _DefaultBasicEnumClassConfig,
 	type _GetBasicEnumShape,
 } from "./_shared";
 
 export default class BasicEnum<
 	const TEnumShape extends EnumLike,
-	const TConfig extends _BasicEnumConfig,
+	const TConfig extends _BasicEnumClassConfig,
 > {
 	readonly #size = 0;
 
@@ -22,7 +22,7 @@ export default class BasicEnum<
 	declare readonly $: ReadonlyDeep<_BasicEnumNamespacedMethods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, config?: Partial<TConfig>) {
-		const { freeze }: _BasicEnumConfig = { ..._DEFAULT_BASIC_ENUM_CONFIG, ...config };
+		const { freeze }: _BasicEnumClassConfig = { ..._DEFAULT_BASIC_ENUM_CLASS_CONFIG, ...config };
 
 		for (const k in enumLike)
 			if (
@@ -47,6 +47,10 @@ export default class BasicEnum<
 			get infer() {
 				self.#infer;
 			},
+			//@ts-expect-error Inference Limitation
+			get raw() {
+				return { ...self };
+			},
 		};
 
 		Object.defineProperty(this, "$", {
@@ -63,12 +67,19 @@ export default class BasicEnum<
 	 *
 	 * This is preferred over `new BasicEnum` since it's more typesafe
 	 */
-	static new<const TEnumShape extends EnumLike, const TConfig extends Partial<_BasicEnumConfig>>(
+	static new<
+		const TEnumShape extends EnumLike,
+		const TConfig extends Partial<_BasicEnumClassConfig>,
+	>(
 		enumLike: TEnumShape,
 		config?: TConfig,
 	): _GetBasicEnumShape<
 		TEnumShape,
-		_GetUserEnumConfigAfterApplyingDefaults<_BasicEnumConfig, _DefaultBasicEnumConfig, TConfig>
+		_GetUserEnumConfigAfterApplyingDefaults<
+			_BasicEnumClassConfig,
+			_DefaultBasicEnumClassConfig,
+			TConfig
+		>
 	> {
 		//@ts-expect-error Inference Limitation
 		return new BasicEnum(enumLike, config);
