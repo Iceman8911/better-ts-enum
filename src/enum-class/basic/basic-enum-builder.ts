@@ -58,7 +58,7 @@ export default class BasicEnumBuilder<
 
 	private constructor(config?: Partial<TConfig>) {
 		//@ts-expect-error Inference limitation
-		this.#config = {..._DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG, ...config}
+		this.#config = { ..._DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG, ...config };
 	}
 
 	/**

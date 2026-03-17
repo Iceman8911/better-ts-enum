@@ -5,3 +5,6 @@
   - `key` - Use the enum key as it's value.
   - Why? Places where only string ids are accepted, but you don't necessarily care about what the id is (i.e. extension messaging ids.)
 - [x] Add a method `$.obj` for retrieving a clone of the input object (without reverse mapping)
+- [ ] Find out how to make jsdocs work ergonomically with the builder.
+- [ ] Maybe support instantiating an enum from the result of [...MyEnum].
+- [ ] Bit-flag enums???
