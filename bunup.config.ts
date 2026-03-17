@@ -12,7 +12,8 @@ export default defineConfig([
 	{
 		name: "browser",
 		entry: "src/*.ts",
-		format: "iife",
+		format: "esm",
+		outDir: "dist/min",
 		packages: "bundle",
 		sourcemap: "linked",
 		target: "browser",

@@ -65,43 +65,52 @@ import { BasicEnum, BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-en
 const { BasicEnum, BasicEnumBuilder } = require("@iceman8911/better-ts-enum/basic-enum");
 ```
 
-#### Browser (IIFE via CDN)
+#### Browser (ESM via CDN)
 
 You can use the browser bundle directly from a CDN.
-**Filename:** `dist/basic-enum.global.js`
+**Filenames:** `dist/min/basic-enum.js`, `dist/min/arithmetic.js`
 
 **jsDelivr (latest):**
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum/dist/basic-enum.global.js"></script>
+<script type="module">
+	import {
+		BasicEnum,
+		BasicEnumBuilder,
+	} from "https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum/dist/min/basic-enum.js";
+</script>
 ```
 
 **jsDelivr (specific version, e.g. 1.2.3):**
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum@1.2.3/dist/basic-enum.global.js"></script>
+<script type="module">
+	import {
+		BasicEnum,
+		BasicEnumBuilder,
+	} from "https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum@1.2.3/dist/min/basic-enum.js";
+</script>
 ```
 
 **unpkg (latest):**
 
 ```html
-<script src="https://unpkg.com/@iceman8911/better-ts-enum/dist/basic-enum.global.js"></script>
+<script type="module">
+	import {
+		BasicEnum,
+		BasicEnumBuilder,
+	} from "https://unpkg.com/@iceman8911/better-ts-enum@latest/dist/min/basic-enum.js";
+</script>
 ```
 
 **unpkg (specific version, e.g. 1.2.3):**
 
 ```html
-<script src="https://unpkg.com/@iceman8911/better-ts-enum@1.2.3/dist/basic-enum.global.js"></script>
-```
-
-**Usage:**
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum/dist/basic-enum.global.js"></script>
-<script>
-	// Global variable: window.BetterTsEnum.BasicEnum, window.BetterTsEnum.BasicEnumBuilder
-	const MyEnum = window.BetterTsEnum.BasicEnum.new({ FOO: 1, BAR: 2 });
-	console.log(MyEnum.FOO); // 1
+<script type="module">
+	import {
+		BasicEnum,
+		BasicEnumBuilder,
+	} from "https://unpkg.com/@iceman8911/better-ts-enum@1.2.3/dist/min/basic-enum.js";
 </script>
 ```
 
