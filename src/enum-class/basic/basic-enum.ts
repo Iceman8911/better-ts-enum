@@ -1,43 +1,36 @@
 import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
-import type { ReadonlyDeep, Simplify, UnionToTuple } from "type-fest";
+import type { ReadonlyDeep } from "type-fest";
+import type { _GetUserEnumConfigAfterApplyingDefaults, _NamespacedMethods } from "../_shared";
+import {
+	_DEFAULT_BASIC_ENUM_CONFIG,
+	type _BasicEnumConfig,
+	type _DefaultBasicEnumConfig,
+	type _GetBasicEnumShape,
+} from "./_shared";
+import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
 
-interface NamespacedMethods<TEnumShape extends EnumLike> {
-	keys(): EnumKeys<TEnumShape>;
-	values(): EnumValues<TEnumShape>;
-	entries(): EnumEntries<TEnumShape>;
-	size: UnionToTuple<keyof TEnumShape>["length"];
-
-	/** Solely for inferring the types of the enum.
-	 *
-	 * In truth, this is actually `undefined`
-	 */
-	infer: {
-		keys: Simplify<keyof TEnumShape>;
-		values: Simplify<TEnumShape[keyof TEnumShape]>;
-	};
-}
-
-export type GetBasicEnumShape<TEnumShape extends EnumLike> = BasicEnum<TEnumShape> &
-	Readonly<TEnumShape>;
-
-export default class BasicEnum<const TEnumShape extends EnumLike> {
+export default class BasicEnum<
+	const TEnumShape extends EnumLike,
+	const TConfig extends _BasicEnumConfig,
+> {
 	readonly #size: number;
 
 	/** Namespace for all class methods.
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<NamespacedMethods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<_NamespacedMethods<TEnumShape>>;
 
-	private constructor(enumLike: TEnumShape) {
-		Object.assign(this, enumLike);
+	private constructor(enumLike: TEnumShape, config?: Partial<TConfig>) {
+		const { freeze }: _BasicEnumConfig = { ..._DEFAULT_BASIC_ENUM_CONFIG, ...config };
+
+		Object.assign(this, removeReverseMappingFromNumericEnum(enumLike));
 
 		this.#size = Object.keys(this).length;
 
 		const self = this;
 
-		//@ts-expect-error `infer` isn't a real property since it's soley for types
-		const namespacedMethods: NamespacedMethods<TEnumShape> = {
+		const namespacedMethods: _NamespacedMethods<TEnumShape> = {
 			keys() {
 				return self.#keys();
 			},
@@ -48,26 +41,48 @@ export default class BasicEnum<const TEnumShape extends EnumLike> {
 				return self.#values();
 			},
 			size: self.#size,
+			//@ts-expect-error Typescript Limitation
+			isKey(arg) {
+				return `${arg}` in self && arg !== "$";
+			},
+			//@ts-expect-error Typescript Limitation
+			isValue(arg) {
+				let isPresent = false;
+
+				for (const value of self.#values()) {
+					if (value === arg) {
+						isPresent = true;
+						break;
+					}
+				}
+
+				return isPresent;
+			},
 		};
 
 		Object.defineProperty(this, "$", {
 			value: namespacedMethods,
 			enumerable: false,
-			configurable: false,
+			configurable: true,
 			writable: false,
 		});
 
-		return Object.freeze(this) as this;
+		return freeze ? Object.freeze(this) : this;
 	}
 
 	/** Instantiates a new BasicEnum.
 	 *
 	 * This is preferred over `new BasicEnum` since it's more typesafe
 	 */
-	static new<const TEnumShape extends EnumLike>(
+	static new<const TEnumShape extends EnumLike, const TConfig extends Partial<_BasicEnumConfig>>(
 		enumLike: TEnumShape,
-	): GetBasicEnumShape<TEnumShape> {
-		return new BasicEnum(enumLike) as GetBasicEnumShape<TEnumShape>;
+		config?: TConfig,
+	): _GetBasicEnumShape<
+		TEnumShape,
+		_GetUserEnumConfigAfterApplyingDefaults<_BasicEnumConfig, _DefaultBasicEnumConfig, TConfig>
+	> {
+		//@ts-expect-error Inference Limitation
+		return new BasicEnum(enumLike, config);
 	}
 
 	//@ts-expect-error Inference Limitation

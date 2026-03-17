@@ -1,6 +1,6 @@
 # BasicEnum – Strongly Typed, Minimal Overhead Enum Replacement
 
-This module provides a robust, ergonomic, and type-safe alternative to native TypeScript enums. It is designed for minimal bundle size (< 1kb+ after minification and gzip compression), and maximum type inference.
+A robust, ergonomic, and type-safe alternative to native TypeScript enums. Designed for minimal bundle size (<1kb min+gzip) and maximum type inference, with runtime safety and advanced config options.
 
 ---
 
@@ -8,14 +8,15 @@ This module provides a robust, ergonomic, and type-safe alternative to native Ty
 
 A drop-in, immutable, runtime-safe enum object with:
 
-- Strong type inference for both keys and values
-- Auto-incrementing numeric values (like native enums)
-- Explicit value assignment (number or string)
-- Computed members with full type safety
+- **Strong type inference** for both keys and values
+- **Auto-incrementing numeric values** (like native enums)
+- **Explicit value assignment** (number or string)
+- **Computed members** with full type safety
+- **Configurable nominal typing and mutability** via a config object
 
 ---
 
-## Usage
+## Quick Start
 
 ### Basic Instantiation
 
@@ -28,14 +29,72 @@ const MyEnum = BasicEnum.new({ FOO: 1, BAR: 2, BAZ: "hello" });
 // MyEnum.BAZ === "hello"
 ```
 
-### Type Inference
+### With Config (nominal/freeze)
+
+```typescript
+// Nominal typing (values are not assignable to raw numbers/strings or other enums)
+const NominalEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "MyEnum" });
+const NominalEnum2 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "OtherEnum" });
+// typeof NominalEnum.FOO is a unique nominal type, not just 1
+// NominalEnum.FOO is NOT type-compatible with NominalEnum2.FOO
+
+// Mutable enum (not frozen, can be reassigned at runtime)
+const MutableEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { freeze: false });
+MutableEnum.FOO = 42; // Allowed at runtime, but not recommended
+```
+
+---
+
+## Config Options
+
+| Option  | Type    | Default | Description                                                                                                                            |
+| ------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| freeze  | boolean | `true`  | If `true`, the enum is deeply frozen (immutable). If `false`, it is mutable at runtime.                                                |
+| nominal | string  | `""`    | If non-empty, values are nominally typed (not assignable to raw numbers/strings). Use a unique tag per enum for strict type isolation. |
+
+---
+
+## Best Practices
+
+- **Nominal Typing:** Use the enum's name as the `nominal` tag for maximum type safety and clarity.
+- **Immutability:** Prefer the default (`freeze: true`) for safety. Only use `freeze: false` if you have a strong reason.
+- **Explicit Config:** Always specify config explicitly if you want non-default behavior.
+- **Type Inference:** Use `typeof MyEnum.$.infer.keys` and `typeof MyEnum.$.infer.values` for strongly-typed keys/values.
+
+---
+
+## Native Enum Wrapping
+
+Reverse-mapping is **not** supported (for sensible iterator behavior):
+
+```typescript
+import { BasicEnum } from "@iceman8911/better-ts-enum/basic-enum";
+
+enum NativeEnum {
+	FOO,
+	BAR,
+	BAZ,
+}
+
+const MyEnum = BasicEnum.new(NativeEnum);
+// MyEnum.FOO === 0
+// MyEnum.BAR === 1
+// MyEnum.BAZ === 2
+// MyEnum[0] is NOT legal (reverse-mapping removed)
+```
+
+---
+
+## Type Inference
 
 ```typescript
 type MyEnumKeys = typeof MyEnum.$.infer.keys; // "FOO" | "BAR" | "BAZ"
 type MyEnumValues = typeof MyEnum.$.infer.values; // 1 | 2 | "hello"
 ```
 
-### Iteration
+---
+
+## Iteration
 
 ```typescript
 for (const key of MyEnum.$.keys()) {
@@ -52,9 +111,12 @@ for (const entry of MyEnum) {
 }
 ```
 
-### Immutability
+---
 
-All enums are deeply frozen. Any attempt to mutate will throw.
+## Immutability
+
+By default, all enums are deeply frozen (`freeze: true`). Any attempt to mutate will throw.
+Opt out by passing `{ freeze: false }` in the config.
 
 ---
 
@@ -65,7 +127,7 @@ For ergonomic, auto-incrementing, and computed enums:
 ```typescript
 import { BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
 
-const TestEnum = new BasicEnumBuilder()
+const TestEnum = BasicEnumBuilder.new()
 	.$("FOO") // FOO = 0
 	.$("BAR") // BAR = 1
 	.$("BAZ", 5) // BAZ = 5
@@ -74,18 +136,32 @@ const TestEnum = new BasicEnumBuilder()
 	.build();
 ```
 
-#### Computed Members
+### With Config (nominal/freeze)
 
 ```typescript
-const CompEnum = new BasicEnumBuilder()
+// Nominal typing (values are not assignable to raw numbers/strings)
+const NominalEnum = BasicEnumBuilder.new({ nominal: "MyEnum" }).$("FOO", 1).$("BAR", 2).build();
+
+// Mutable enum (not frozen, can be reassigned at runtime)
+const MutableEnum = BasicEnumBuilder.new({ freeze: false }).$("FOO", 1).$("BAR", 2).build();
+
+MutableEnum.FOO = 42; // Allowed at runtime, but not recommended
+```
+
+### Computed Members
+
+```typescript
+import { add, multiply } from "@iceman8911/better-ts-enum/arithmetic";
+
+const CompEnum = BasicEnumBuilder.new()
 	.$("A", 1)
-	.$((e) => ["B", e.A + 1])
-	.$((e) => ["C", e.B * 2])
+	.$((e) => ["B", add(e.A, 1)])
+	.$((e) => ["C", multiply(e.B, 2)])
 	.build();
 // CompEnum.A === 1, CompEnum.B === 2, CompEnum.C === 4
 ```
 
-#### Type Inference
+### Type Inference
 
 ```typescript
 type CompEnumKeys = typeof CompEnum.$.infer.keys; // "A" | "B" | "C"
@@ -96,26 +172,29 @@ type CompEnumValues = typeof CompEnum.$.infer.values; // 1 | 2 | 4
 
 ## Design Rationale
 
-- **Type Safety**: All keys and values are strongly typed and inferred.
-- **Immutability**: Enums are deeply frozen, preventing accidental mutation.
-- **No Prototype Pollution**: Only own, string keys are enumerated.
-- **No Reverse Mapping**: Numeric reverse mapping is intentionally omitted for simplicity and bundle size.
-- **Builder Pattern**: Enables auto-increment, explicit, and computed values with full type inference.
+- **Type Safety:** All keys and values are strongly typed and inferred.
+- **Immutability:** Enums are deeply frozen by default (opt-out with `{ freeze: false }`).
+- **Nominal Typing:** Enable with `{ nominal: "YourEnumName" }` for strict type safety.
+- **No Prototype Pollution:** Only own, string keys are enumerated.
+- **No Reverse Mapping:** Numeric reverse mapping is intentionally omitted for simplicity and bundle size.
+- **Builder Pattern:** Enables auto-increment, explicit, and computed values with full type inference.
 
 ---
 
 ## Edge Cases
 
-- **Duplicate Keys**: Throws at build time.
-- **Prototype Pollution**: Only own keys are used.
-- **Symbol Keys**: Ignored.
+- **Duplicate Keys:** Throws at build time.
+- **Prototype Pollution:** Only own keys are used.
+- **Symbol Keys:** Ignored.
 
 ---
 
 ## Gotchas
 
-- **TypeScript Arithmetic**: TypeScript widens arithmetic results to `number`. Use helper functions or explicit casts for computed numeric values if you want to preserve literal types.
-- **No Reverse Mapping**: If you need value-to-key mapping, implement it manually.
+- **TypeScript Arithmetic:** TypeScript widens arithmetic results to `number`. Use helper functions or explicit casts for computed numeric values if you want to preserve literal types.
+- **No Reverse Mapping:** If you need value-to-key mapping, implement it manually.
+- **Nominal Typing:** When `nominal` is set (non-empty string), enum values are not assignable to raw numbers/strings—enforced at the type level.
+- **Mutability:** By default, enums are frozen. If you set `{ freeze: false }`, you can mutate the enum at runtime (not recommended for most use cases).
 
 ---
 
@@ -126,7 +205,7 @@ For type-safe arithmetic in computed members, use helpers (see `arithmetic.ts`):
 ```typescript
 import { add, multiply } from "@iceman8911/better-ts-enum/arithmetic";
 
-const Enum = new BasicEnumBuilder()
+const Enum = BasicEnumBuilder.new()
 	.$("A", 2)
 	.$((e) => ["B", add(e.A, 3)])
 	.$((e) => ["C", multiply(e.B, 2)])
@@ -137,16 +216,24 @@ const Enum = new BasicEnumBuilder()
 
 ## API Reference
 
-### `BasicEnum.new(enumLike: object)`
+### `BasicEnum.new(enumLike: object, config?: { nominal?: string, freeze?: boolean })`
 
-- Returns a deeply frozen enum object with a non-colliding `$` namespace for methods.
+- Returns an enum object with a non-colliding `$` namespace for methods.
+- `config.nominal` (default: `""`): If non-empty, values are nominally typed (not assignable to raw numbers/strings).
+- `config.freeze` (default: `true`): If `false`, the enum is not frozen and can be mutated at runtime.
 
-### `BasicEnumBuilder`
+### `BasicEnumBuilder.new(config?: { nominal?: string, freeze?: boolean })`
+
+- Returns a builder for ergonomic, auto-incrementing, and computed enums.
+- `config.nominal` (default: `""`): If non-empty, values are nominally typed.
+- `config.freeze` (default: `true`): If `false`, the built enum is not frozen.
+
+#### Builder Methods
 
 - `.$(key: string)`: Adds a key with auto-incremented value.
 - `.$(key: string, value: number|string)`: Adds a key with explicit value.
 - `.$(fn: (enumSoFar) => key | [key, value])`: Adds a computed member.
-- `.build()`: Returns a frozen, strongly-typed enum.
+- `.build()`: Returns a strongly-typed enum, frozen by default unless `freeze: false` is set.
 
 ---
 

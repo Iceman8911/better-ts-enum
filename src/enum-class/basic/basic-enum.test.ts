@@ -35,6 +35,21 @@ describe(BasicEnum.name, () => {
 		expect(testEnumArg).toEqual(testEnum);
 	});
 
+	it("should not allow the namespace prop '$' to be assignable under normal means", () => {
+		const namespaceVal = testEnum.$;
+
+		try {
+			//@ts-expect-error Testing purposes
+			testEnum.$ = "foo";
+		} catch {}
+
+		expect(namespaceVal).toStrictEqual(testEnum.$);
+	});
+
+	it("should not iterate over the namespace prop '$'", () => {
+		expect([...testEnum.$.keys()]).not.toContain("$");
+	});
+
 	it("should iterate over all explicit enum keys with $.keys in insertion order", () => {
 		const seenKeys: EnumKey[] = [];
 
@@ -76,9 +91,93 @@ describe(BasicEnum.name, () => {
 		expect(testEnum.$.size).toBe(5);
 	});
 
+	it("should work as a type guard for the enum's keys", () => {
+		const randomKey: unknown = "foo";
+
+		if (testEnum.$.isKey(randomKey)) {
+			expectTypeOf<typeof randomKey>().toEqualTypeOf<TestEnumArgKeys>();
+			expect(randomKey).toBe("foo");
+		}
+	});
+
+	it("should work as a type guard for the enum's values", () => {
+		const randomValue: unknown = 4.5;
+
+		if (testEnum.$.isValue(randomValue)) {
+			expectTypeOf<typeof randomValue>().toEqualTypeOf<TestEnumArgValues>();
+			expect(randomValue).toBe(4.5);
+		}
+	});
+
 	it("should allow easy inference of the underlying enum type", () => {
-		expectTypeOf<typeof testEnum.$.infer.keys>().toExtend<TestEnumArgKeys>();
-		expectTypeOf<typeof testEnum.$.infer.values>().toExtend<TestEnumArgValues>();
+		expectTypeOf<typeof testEnum.$.infer.keys>().toEqualTypeOf<TestEnumArgKeys>();
+		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
+	});
+
+	it("should infer nominal typing when nominal: true is set", () => {
+		const nominalEnum1 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal1" });
+		const nominalEnum2 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal2" });
+
+		expectTypeOf<typeof nominalEnum1.BAR>().toExtend<2>();
+		expectTypeOf<2>().not.toExtend<typeof nominalEnum1.BAR>();
+		//@ts-expect-error For Testing
+		expect(nominalEnum1.BAR).toBe(2);
+
+		expectTypeOf<typeof nominalEnum1.FOO>().toExtend<1>();
+		expectTypeOf<1>().not.toExtend<typeof nominalEnum1.FOO>();
+		//@ts-expect-error For Testing
+		expect(nominalEnum1.FOO).toBe(1);
+
+		expectTypeOf<typeof nominalEnum1.BAR>().not.toEqualTypeOf<typeof nominalEnum2.BAR>();
+	});
+
+	it("should infer non-nominal typing when nominal: false (default)", () => {
+		const regularEnum = BasicEnum.new({ FOO: 1, BAR: 2 });
+
+		type Values = typeof regularEnum.$.infer.values;
+		const ok1: Values = 1;
+		const ok2: Values = 2;
+		expect(ok1).toBe(1);
+		expect(ok2).toBe(2);
+	});
+
+	it("should be readonly at type-level and frozen at runtime when freeze: true (default)", () => {
+		const frozenEnum = BasicEnum.new({ FOO: 1, BAR: 2 });
+
+		expect(() => {
+			//@ts-expect-error For testing
+			frozenEnum.BAR = 32;
+			//@ts-expect-error For testing
+			frozenEnum.FOO = "ds";
+		}).toThrow();
+
+		expect(Object.isFrozen(frozenEnum)).toBe(true);
+	});
+
+	it("should NOT be readonly at type-level and NOT frozen at runtime when freeze: false", () => {
+		const unfrozenEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { freeze: false });
+
+		unfrozenEnum.FOO = 1;
+		expect(Object.isFrozen(unfrozenEnum)).toBe(false);
+	});
+
+	it("should strip out the reverse-mapping of native numeric typescript enums", () => {
+		enum NativeEnum {
+			FOO,
+			BAR,
+			BAZ,
+		}
+
+		const convertedEnum = BasicEnum.new(NativeEnum);
+
+		expect([...convertedEnum.$.keys()]).toEqual(["FOO", "BAR", "BAZ"]);
+		expect([...convertedEnum.$.values()]).toEqual([NativeEnum.FOO, NativeEnum.BAR, NativeEnum.BAZ]);
+		expect([...convertedEnum.$.entries()]).toStrictEqual([
+			["FOO", NativeEnum.FOO],
+			["BAR", NativeEnum.BAR],
+			["BAZ", NativeEnum.BAZ],
+		]);
+		expect(convertedEnum.$.size).toBe(3);
 	});
 
 	it("should handle an empty enum", () => {
@@ -88,7 +187,6 @@ describe(BasicEnum.name, () => {
 		expect([...emptyEnum.$.entries()]).toEqual([]);
 		expect([...emptyEnum]).toEqual([]);
 		expect(emptyEnum.$.size).toBe(0);
-		expect(Object.isFrozen(emptyEnum)).toBe(true);
 	});
 
 	it("should handle a single-key enum", () => {
@@ -98,7 +196,6 @@ describe(BasicEnum.name, () => {
 		expect([...singleEnum.$.entries()]).toEqual([["only", 42]]);
 		expect([...singleEnum]).toEqual([["only", 42]]);
 		expect(singleEnum.$.size).toBe(1);
-		expect(Object.isFrozen(singleEnum)).toBe(true);
 	});
 
 	it("should not enumerate prototype properties", () => {

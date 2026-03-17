@@ -23,8 +23,86 @@ This project provides a set of composable, zero-runtime-surprise enum utilities 
 
 ## Installation
 
+Install with your favorite package manager:
+
+**bun**
+
 ```bash
 bun add @iceman8911/better-ts-enum
+```
+
+**npm**
+
+```bash
+npm install @iceman8911/better-ts-enum
+```
+
+**pnpm**
+
+```bash
+pnpm add @iceman8911/better-ts-enum
+```
+
+**yarn**
+
+```bash
+yarn add @iceman8911/better-ts-enum
+```
+
+---
+
+### Usage Examples
+
+#### ESM (Node/modern bundlers)
+
+```typescript
+import { BasicEnum, BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
+```
+
+#### CommonJS (require)
+
+```js
+const { BasicEnum, BasicEnumBuilder } = require("@iceman8911/better-ts-enum/basic-enum");
+```
+
+#### Browser (IIFE via CDN)
+
+You can use the browser bundle directly from a CDN.
+**Filename:** `dist/basic-enum.global.js`
+
+**jsDelivr (latest):**
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum/dist/basic-enum.global.js"></script>
+```
+
+**jsDelivr (specific version, e.g. 1.2.3):**
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum@1.2.3/dist/basic-enum.global.js"></script>
+```
+
+**unpkg (latest):**
+
+```html
+<script src="https://unpkg.com/@iceman8911/better-ts-enum/dist/basic-enum.global.js"></script>
+```
+
+**unpkg (specific version, e.g. 1.2.3):**
+
+```html
+<script src="https://unpkg.com/@iceman8911/better-ts-enum@1.2.3/dist/basic-enum.global.js"></script>
+```
+
+**Usage:**
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum/dist/basic-enum.global.js"></script>
+<script>
+	// Global variable: window.BetterTsEnum.BasicEnum, window.BetterTsEnum.BasicEnumBuilder
+	const MyEnum = window.BetterTsEnum.BasicEnum.new({ FOO: 1, BAR: 2 });
+	console.log(MyEnum.FOO); // 1
+</script>
 ```
 
 ---
