@@ -51,6 +51,21 @@ yarn add @iceman8911/better-ts-enum
 
 ---
 
+## Serialization
+
+Enum instances are serializable out of the box with `JSON.stringify`. The result is always a deep copy of the plain object that was used to instantiate the enum (with reverse-mapping removed for native TypeScript enums). This makes it easy to persist, transmit, or compare enum instances.
+
+**Example:**
+
+```typescript
+const MyEnum = BasicEnum.new({ FOO: 1, BAR: 2, BAZ: "hello" });
+console.log(JSON.stringify(MyEnum)); // '{"FOO":1,"BAR":2,"BAZ":"hello"}'
+```
+
+- The output of `JSON.stringify(enumInstance)` is always identical to `JSON.stringify(inputObject)` (aside from reverse-mapping removal for native enums).
+
+---
+
 ## Common Use Cases
 
 ### Schema Validation with `$.raw`
@@ -173,6 +188,9 @@ MIT
 ## API Reference
 
 ### `$.raw` – Accessing the Raw Enum Shape
+
+**Serialization:**
+Enum instances are serializable by `JSON.stringify` out of the box. The result is always a deep copy of the original input object (with reverse-mapping removed for native enums). This means `JSON.stringify(enumInstance)` is equivalent to `JSON.stringify(inputObject)`.
 
 The `$.raw` property returns a shallow copy of the enum's original shape, suitable for use in validation libraries, or any context where a plain object is required.
 
