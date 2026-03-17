@@ -65,6 +65,12 @@ export interface _SharedNamespacedMethods<TEnumShape extends EnumLike> {
 
 	size: UnionToTuple<keyof TEnumShape>["length"];
 
+	/** Represents a copy of the plain object used during instantiation.
+	 *
+	 * In cases where the object was a numeric native enum, the reverse-mapping is lost
+	 */
+	raw: TEnumShape;
+
 	isKey(arg: unknown): arg is _SharedNamespacedMethods<TEnumShape>["infer"]["keys"];
 	isValue(arg: unknown): arg is _SharedNamespacedMethods<TEnumShape>["infer"]["values"];
 

@@ -47,6 +47,10 @@ export default class BasicEnum<
 			get infer() {
 				self.#infer;
 			},
+			//@ts-expect-error Inference Limitation
+			get raw() {
+				return { ...self };
+			},
 		};
 
 		Object.defineProperty(this, "$", {

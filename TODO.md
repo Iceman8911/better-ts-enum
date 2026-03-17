@@ -5,4 +5,4 @@
   - `numberString` - Like `number`, but the incremented number is then cast to a string
   - `key` - Use the enum key as it's value.
   - Why? Places where only string ids are accepted, but you don't necessarily care about what the id is (i.e. extension messaging ids.)
-- [ ] Add a method `$.obj` for retrieving a clone of the input object (without reverse mapping)
+- [x] Add a method `$.obj` for retrieving a clone of the input object (without reverse mapping)
