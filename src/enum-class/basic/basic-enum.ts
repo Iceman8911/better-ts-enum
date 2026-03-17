@@ -1,9 +1,10 @@
 import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
-import type { _GetUserEnumConfigAfterApplyingDefaults, _NamespacedMethods } from "../_shared";
+import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
 import {
 	_DEFAULT_BASIC_ENUM_CONFIG,
 	type _BasicEnumConfig,
+	type _BasicEnumNamespacedMethods,
 	type _DefaultBasicEnumConfig,
 	type _GetBasicEnumShape,
 } from "./_shared";
@@ -18,7 +19,7 @@ export default class BasicEnum<
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<_NamespacedMethods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<_BasicEnumNamespacedMethods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, config?: Partial<TConfig>) {
 		const { freeze }: _BasicEnumConfig = { ..._DEFAULT_BASIC_ENUM_CONFIG, ...config };
@@ -36,7 +37,7 @@ export default class BasicEnum<
 		const self = this;
 
 		//@ts-expect-error Inference Limitation
-		const namespacedMethods: _NamespacedMethods<TEnumShape> = {
+		const namespacedMethods: _BasicEnumNamespacedMethods<TEnumShape> = {
 			keys: self.#keys.bind(self),
 			entries: self.#entries.bind(self),
 			values: self.#values.bind(self),
@@ -99,11 +100,11 @@ export default class BasicEnum<
 		}
 	}
 
-	#isKey(arg: unknown): arg is _NamespacedMethods<TEnumShape>["infer"]["keys"] {
+	#isKey(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
 		return `${arg}` in self && arg !== "$";
 	}
 
-	#isValue(arg: unknown): arg is _NamespacedMethods<TEnumShape>["infer"]["values"] {
+	#isValue(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
 		let isPresent = false;
 
 		for (const value of this.#values()) {

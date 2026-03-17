@@ -1,6 +1,10 @@
 import type { Writable } from "type-fest";
 import type { EnumLike, NominalizeEnumLike } from "../../types/enum/enum-class";
-import { _DEFAULT_SHARED_ENUM_CLASS_CONFIG, type _SharedEnumClassConfig } from "../_shared";
+import {
+	_DEFAULT_SHARED_ENUM_CLASS_CONFIG,
+	type _SharedEnumClassConfig,
+	type _SharedNamespacedMethods,
+} from "../_shared";
 import type BasicEnum from "./basic-enum";
 
 type _GetNominalOrRegularEnumShape<
@@ -28,3 +32,7 @@ export interface _DefaultBasicEnumConfig extends _BasicEnumConfig {
 export const _DEFAULT_BASIC_ENUM_CONFIG: _DefaultBasicEnumConfig = {
 	..._DEFAULT_SHARED_ENUM_CLASS_CONFIG,
 };
+
+export interface _BasicEnumNamespacedMethods<
+	TEnumShape extends EnumLike,
+> extends _SharedNamespacedMethods<TEnumShape> {}
