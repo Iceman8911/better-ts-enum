@@ -1,4 +1,4 @@
-# @iceman8911/better-ts-enum
+# better-ts-enum
 
 A scalable, type-safe, and ergonomic TypeScript enum replacement library.
 
@@ -28,25 +28,25 @@ Install with your favorite package manager:
 **bun**
 
 ```bash
-bun add @iceman8911/better-ts-enum
+bun add better-ts-enum
 ```
 
 **npm**
 
 ```bash
-npm install @iceman8911/better-ts-enum
+npm install better-ts-enum
 ```
 
 **pnpm**
 
 ```bash
-pnpm add @iceman8911/better-ts-enum
+pnpm add better-ts-enum
 ```
 
 **yarn**
 
 ```bash
-yarn add @iceman8911/better-ts-enum
+yarn add better-ts-enum
 ```
 
 ---
@@ -75,7 +75,7 @@ When integrating with validation libraries (like [valibot](https://valibot.dev/)
 **Example: Using with valibot**
 
 ```typescript
-import { BasicEnum } from "@iceman8911/better-ts-enum/basic-enum";
+import { BasicEnum } from "better-ts-enum/basic-enum";
 import { object, string, enum, parse } from "valibot";
 
 const StatusEnum = BasicEnum.new({ ACTIVE: "active", INACTIVE: "inactive" });
@@ -101,13 +101,13 @@ Validation libraries and similar will likely flag an error if you use the instan
 #### ESM (Node/modern bundlers)
 
 ```typescript
-import { BasicEnum, BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
+import { BasicEnum, BasicEnumBuilder } from "better-ts-enum/basic-enum";
 ```
 
 #### CommonJS (require)
 
 ```js
-const { BasicEnum, BasicEnumBuilder } = require("@iceman8911/better-ts-enum/basic-enum");
+const { BasicEnum, BasicEnumBuilder } = require("better-ts-enum/basic-enum");
 ```
 
 #### Browser (ESM via CDN)
@@ -122,7 +122,7 @@ You can use the browser bundle directly from a CDN.
 	import {
 		BasicEnum,
 		BasicEnumBuilder,
-	} from "https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum/dist/min/basic-enum.js";
+	} from "https://cdn.jsdelivr.net/npm/better-ts-enum/dist/min/basic-enum.js";
 </script>
 ```
 
@@ -133,7 +133,7 @@ You can use the browser bundle directly from a CDN.
 	import {
 		BasicEnum,
 		BasicEnumBuilder,
-	} from "https://cdn.jsdelivr.net/npm/@iceman8911/better-ts-enum@1.2.3/dist/min/basic-enum.js";
+	} from "https://cdn.jsdelivr.net/npm/better-ts-enum@1.2.3/dist/min/basic-enum.js";
 </script>
 ```
 
@@ -144,7 +144,7 @@ You can use the browser bundle directly from a CDN.
 	import {
 		BasicEnum,
 		BasicEnumBuilder,
-	} from "https://unpkg.com/@iceman8911/better-ts-enum@latest/dist/min/basic-enum.js";
+	} from "https://unpkg.com/better-ts-enum@latest/dist/min/basic-enum.js";
 </script>
 ```
 
@@ -155,7 +155,7 @@ You can use the browser bundle directly from a CDN.
 	import {
 		BasicEnum,
 		BasicEnumBuilder,
-	} from "https://unpkg.com/@iceman8911/better-ts-enum@1.2.3/dist/min/basic-enum.js";
+	} from "https://unpkg.com/better-ts-enum@1.2.3/dist/min/basic-enum.js";
 </script>
 ```
 

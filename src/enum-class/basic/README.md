@@ -21,7 +21,7 @@ A drop-in, immutable, runtime-safe enum object with:
 ### Basic Instantiation
 
 ```typescript
-import { BasicEnum } from "@iceman8911/better-ts-enum/basic-enum";
+import { BasicEnum } from "better-ts-enum/basic-enum";
 
 const MyEnum = BasicEnum.new({ FOO: 1, BAR: 2, BAZ: "hello" });
 // MyEnum.FOO === 1
@@ -47,12 +47,12 @@ MutableEnum.FOO = 42; // Allowed at runtime, but not recommended
 
 ### Customizing Default Enum Values with `valueType`
 
-By default, `BasicEnumBuilder` assigns auto-incrementing numbers to enum members added without an explicit value (`valueType: "number"`).  
-You can instead use `valueType: "key"` to assign the enum key itself as the value (string).  
+By default, `BasicEnumBuilder` assigns auto-incrementing numbers to enum members added without an explicit value (`valueType: "number"`).
+You can instead use `valueType: "key"` to assign the enum key itself as the value (string).
 This is useful for environments that require string-only IDs, such as extension messaging or schema validation.
 
 ```typescript
-import { BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
+import { BasicEnumBuilder } from "better-ts-enum/basic-enum";
 
 // Default: valueType = "number"
 const NumberEnum = BasicEnumBuilder.new().$("FOO").$("BAR").$("BAZ").build();
@@ -93,7 +93,7 @@ const MixedEnum = BasicEnumBuilder.new({ valueType: "key" }).$("FOO").$("BAR", 4
 Reverse-mapping is **not** supported (for sensible iterator behavior):
 
 ```typescript
-import { BasicEnum } from "@iceman8911/better-ts-enum/basic-enum";
+import { BasicEnum } from "better-ts-enum/basic-enum";
 
 enum NativeEnum {
 	FOO,
@@ -150,7 +150,7 @@ Opt out by passing `{ freeze: false }` in the config.
 For ergonomic, auto-incrementing, and computed enums:
 
 ```typescript
-import { BasicEnumBuilder } from "@iceman8911/better-ts-enum/basic-enum";
+import { BasicEnumBuilder } from "better-ts-enum/basic-enum";
 
 const TestEnum = BasicEnumBuilder.new()
 	.$("FOO") // FOO = 0
@@ -176,7 +176,7 @@ MutableEnum.FOO = 42; // Allowed at runtime, but not recommended
 ### Computed Members
 
 ```typescript
-import { add, multiply } from "@iceman8911/better-ts-enum/arithmetic";
+import { add, multiply } from "better-ts-enum/arithmetic";
 
 const CompEnum = BasicEnumBuilder.new()
 	.$("A", 1)
@@ -237,7 +237,7 @@ type CompEnumValues = typeof CompEnum.$.infer.values; // 1 | 2 | 4
 For type-safe arithmetic in computed members, use helpers (see `arithmetic.ts`):
 
 ```typescript
-import { add, multiply } from "@iceman8911/better-ts-enum/arithmetic";
+import { add, multiply } from "better-ts-enum/arithmetic";
 
 const Enum = BasicEnumBuilder.new()
 	.$("A", 2)
