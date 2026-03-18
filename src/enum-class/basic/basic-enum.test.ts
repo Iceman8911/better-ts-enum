@@ -265,4 +265,10 @@ describe(BasicEnum.name, () => {
 		//@ts-expect-error For testing
 		expect(enumObj.$.size).toBe(1);
 	});
+
+	it("should support unicode and emoji keys/values", () => {
+		const enumObj = BasicEnum.new({ "😀": "🎉", ключ: "значение" });
+		expect(enumObj["😀"]).toBe("🎉");
+		expect(enumObj["ключ"]).toBe("значение");
+	});
 });
