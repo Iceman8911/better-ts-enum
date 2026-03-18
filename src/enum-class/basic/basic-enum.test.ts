@@ -36,6 +36,10 @@ describe(BasicEnum.name, () => {
 		expect(testEnumArg).toEqual(testEnum);
 	});
 
+	it("should throw if the input contains the reserved namespace key `$`", () => {
+		expect(() => BasicEnum.new({ $: "should throw" })).toThrowError(/\$.+key.+reserved/);
+	});
+
 	it("should not allow the namespace prop '$' to be assignable under normal means", () => {
 		const namespaceVal = testEnum.$;
 
