@@ -2,10 +2,11 @@ import type { Simplify } from "type-fest";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import type { _IncrementNumberByOneStage } from "../../types/_utils";
 import BasicEnum from "./basic-enum";
-import type {
-	_BasicEnumClassBuilderConfig,
-	_DefaultBasicEnumClassBuilderConfig,
-	_GetBasicEnumShape,
+import {
+	_DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG,
+	type _BasicEnumClassBuilderConfig,
+	type _DefaultBasicEnumClassBuilderConfig,
+	type _GetBasicEnumShape,
 } from "./_shared";
 import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
 
@@ -56,7 +57,8 @@ export default class BasicEnumBuilder<
 	#config: Partial<TConfig>;
 
 	private constructor(config?: Partial<TConfig>) {
-		this.#config = config ?? {};
+		//@ts-expect-error Inference limitation
+		this.#config = { ..._DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG, ...config };
 	}
 
 	/**

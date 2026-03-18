@@ -47,7 +47,7 @@ export interface _DefaultBasicEnumClassBuilderConfig
 	readonly valueType: "number";
 }
 
-export const _DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG: _DefaultBasicEnumClassConfig = {
+export const _DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG: _DefaultBasicEnumClassBuilderConfig = {
 	..._DEFAULT_SHARED_ENUM_CLASS_BUILDER_CONFIG,
 };
 

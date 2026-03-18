@@ -29,6 +29,8 @@ export default class BasicEnum<
 				Object.getOwnPropertyDescriptor(enumLike, k) &&
 				(isNaN(+k) || typeof enumLike[k] !== "string")
 			) {
+				if (k === "$") throw Error("'$' cannot be used as an enum key since it is reserved.");
+
 				//@ts-expect-error Inference Limitation
 				this[k] = enumLike[k];
 				this.#size++;
@@ -45,7 +47,7 @@ export default class BasicEnum<
 			isValue: self.#isValue.bind(self),
 			//@ts-expect-error Inference Limitation
 			get infer() {
-				self.#infer;
+				return self.#infer;
 			},
 			//@ts-expect-error Inference Limitation
 			get raw() {

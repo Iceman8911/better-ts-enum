@@ -36,6 +36,10 @@ describe(BasicEnum.name, () => {
 		expect(testEnumArg).toEqual(testEnum);
 	});
 
+	it("should throw if the input contains the reserved namespace key `$`", () => {
+		expect(() => BasicEnum.new({ $: "should throw" })).toThrowError(/\$.+key.+reserved/);
+	});
+
 	it("should not allow the namespace prop '$' to be assignable under normal means", () => {
 		const namespaceVal = testEnum.$;
 
@@ -260,5 +264,11 @@ describe(BasicEnum.name, () => {
 		expect([...enumObj.$.entries()]).toEqual([["foo", 1]]);
 		//@ts-expect-error For testing
 		expect(enumObj.$.size).toBe(1);
+	});
+
+	it("should support unicode and emoji keys/values", () => {
+		const enumObj = BasicEnum.new({ "😀": "🎉", ключ: "значение" });
+		expect(enumObj["😀"]).toBe("🎉");
+		expect(enumObj["ключ"]).toBe("значение");
 	});
 });
