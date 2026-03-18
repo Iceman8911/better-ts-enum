@@ -45,7 +45,7 @@ export default class BasicEnum<
 			isValue: self.#isValue.bind(self),
 			//@ts-expect-error Inference Limitation
 			get infer() {
-				self.#infer;
+				return self.#infer;
 			},
 			//@ts-expect-error Inference Limitation
 			get raw() {
