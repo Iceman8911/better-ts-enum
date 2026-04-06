@@ -116,7 +116,7 @@ export default class BasicEnum<
 	}
 
 	#isKey(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
-		return `${arg}` in self && arg !== "$";
+		return `${arg}` in this && arg !== "$";
 	}
 
 	#isValue(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
