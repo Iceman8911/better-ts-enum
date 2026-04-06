@@ -1,4 +1,9 @@
-import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
+import type {
+	EnumEntries,
+	EnumKeys,
+	EnumLike,
+	EnumValues,
+} from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
 import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
 import {
@@ -21,15 +26,16 @@ export default class BasicEnum<
 	 */
 	declare readonly $: ReadonlyDeep<_BasicEnumNamespacedMethods<TEnumShape>>;
 
-	private constructor(enumLike: TEnumShape, config?: Partial<TConfig>) {
-		const { freeze }: _BasicEnumClassConfig = { ..._DEFAULT_BASIC_ENUM_CLASS_CONFIG, ...config };
-
+	private constructor(enumLike: TEnumShape, _config: TConfig) {
 		for (const k in enumLike)
 			if (
 				Object.getOwnPropertyDescriptor(enumLike, k) &&
 				(isNaN(+k) || typeof enumLike[k] !== "string")
 			) {
-				if (k === "$") throw Error("'$' cannot be used as an enum key since it is reserved.");
+				if (k === "$")
+					throw Error(
+						"'$' cannot be used as an enum key since it is reserved.",
+					);
 
 				//@ts-expect-error Inference Limitation
 				this[k] = enumLike[k];
@@ -61,8 +67,6 @@ export default class BasicEnum<
 			configurable: true,
 			writable: false,
 		});
-
-		return freeze ? Object.freeze(this) : this;
 	}
 
 	/** Instantiates a new BasicEnum.
@@ -83,8 +87,15 @@ export default class BasicEnum<
 			TConfig
 		>
 	> {
+		const resolvedConfig: _BasicEnumClassConfig = {
+			..._DEFAULT_BASIC_ENUM_CLASS_CONFIG,
+			...config,
+		};
+
+		const instance = new BasicEnum(enumLike, resolvedConfig);
+
 		//@ts-expect-error Inference Limitation
-		return new BasicEnum(enumLike, config);
+		return resolvedConfig.freeze ? Object.freeze(instance) : instance;
 	}
 
 	//@ts-expect-error Inference Limitation
@@ -98,9 +109,7 @@ export default class BasicEnum<
 
 	//@ts-expect-error Inference Limitation
 	*#values(): EnumValues<TEnumShape> {
-		let key: keyof TEnumShape;
-
-		for (key in this) {
+		for (const key of this.#keys()) {
 			//@ts-expect-error Inference Limitation
 			yield this[key];
 		}
@@ -108,19 +117,21 @@ export default class BasicEnum<
 
 	//@ts-expect-error Inference Limitation
 	*#entries(): EnumEntries<TEnumShape> {
-		let key: keyof TEnumShape;
-
-		for (key in this) {
+		for (const key of this.#keys()) {
 			//@ts-expect-error Inference Limitation
 			yield [key, this[key]];
 		}
 	}
 
-	#isKey(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
+	#isKey(
+		arg: unknown,
+	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
 		return `${arg}` in self && arg !== "$";
 	}
 
-	#isValue(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
+	#isValue(
+		arg: unknown,
+	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
 		let isPresent = false;
 
 		for (const value of this.#values()) {
@@ -134,7 +145,9 @@ export default class BasicEnum<
 	}
 
 	get #infer() {
-		throw Error("`this.#infer` is a type-only property. Do not call it in runtime code.");
+		throw Error(
+			"`this.#infer` is a type-only property. Do not call it in runtime code.",
+		);
 	}
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {
