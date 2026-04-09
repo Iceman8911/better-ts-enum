@@ -60,7 +60,9 @@ describe(BasicEnumBuilder.name, () => {
 				.build();
 
 		expect(getDupEnum).toThrow();
-		expectTypeOf<ReturnType<typeof getDupEnum>["$"]["infer"]["keys"]>().toEqualTypeOf<never>();
+		expectTypeOf<
+			ReturnType<typeof getDupEnum>["$"]["infer"]["keys"]
+		>().toEqualTypeOf<never>();
 	});
 
 	it("should allow complex computed keys/values", () => {
@@ -97,7 +99,9 @@ describe(BasicEnumBuilder.name, () => {
 		//@ts-expect-error For Testing
 		expect(nominalEnum1.FOO).toBe(1);
 
-		expectTypeOf<typeof nominalEnum1.BAR>().not.toEqualTypeOf<typeof nominalEnum2.BAR>();
+		expectTypeOf<typeof nominalEnum1.BAR>().not.toEqualTypeOf<
+			typeof nominalEnum2.BAR
+		>();
 	});
 
 	it("should infer non-nominal typing when `nominal: false` (default)", () => {
@@ -124,14 +128,22 @@ describe(BasicEnumBuilder.name, () => {
 	});
 
 	it("should NOT be readonly at type-level and NOT frozen at runtime when freeze: false", () => {
-		const unfrozenEnum = BasicEnumBuilder.new({ freeze: false }).$("FOO", 1).$("BAR", 2).build();
+		const unfrozenEnum = BasicEnumBuilder.new({ freeze: false })
+			.$("FOO", 1)
+			.$("BAR", 2)
+			.build();
 
 		unfrozenEnum.FOO = 1;
 		expect(Object.isFrozen(unfrozenEnum)).toBe(false);
 	});
 
 	it("should use auto-incrementing numbers as default enum values when valueType: 'number' or is absent", () => {
-		const numberEnum = BasicEnumBuilder.new().$("foo").$("bar").$("baz").$("foobar").build();
+		const numberEnum = BasicEnumBuilder.new()
+			.$("foo")
+			.$("bar")
+			.$("baz")
+			.$("foobar")
+			.build();
 		const numberEnum2 = BasicEnumBuilder.new({ valueType: "number" })
 			.$("foo")
 			.$("bar")
@@ -139,7 +151,12 @@ describe(BasicEnumBuilder.name, () => {
 			.$("foobar")
 			.build();
 
-		expect(numberEnum.$.raw).toStrictEqual({ foo: 0, bar: 1, baz: 2, foobar: 3 });
+		expect(numberEnum.$.raw).toStrictEqual({
+			foo: 0,
+			bar: 1,
+			baz: 2,
+			foobar: 3,
+		});
 		expect(numberEnum).toStrictEqual(numberEnum2);
 		expectTypeOf(numberEnum).toEqualTypeOf(numberEnum2);
 	});

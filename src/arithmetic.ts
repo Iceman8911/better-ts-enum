@@ -1,7 +1,10 @@
 import type * as TsArithmetic from "ts-arithmetic";
 
 // Helper for addition
-export function add<A extends number, B extends number>(a: A, b: B): TsArithmetic.Add<A, B> {
+export function add<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Add<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a + b;
 }
@@ -25,13 +28,19 @@ export function multiply<A extends number, B extends number>(
 }
 
 // Helper for division
-export function divide<A extends number, B extends number>(a: A, b: B): TsArithmetic.Divide<A, B> {
+export function divide<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Divide<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a / b;
 }
 
 // Helper for modulo
-export function mod<A extends number, B extends number>(a: A, b: B): TsArithmetic.Mod<A, B> {
+export function mod<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Mod<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a % b;
 }
@@ -49,31 +58,46 @@ export function abs<A extends number>(a: A): TsArithmetic.Abs<A> {
 }
 
 // Comparison: eq (===)
-export function eq<A extends number, B extends number>(a: A, b: B): TsArithmetic.Eq<A, B> {
+export function eq<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Eq<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a === b;
 }
 
 // Greater than
-export function gt<A extends number, B extends number>(a: A, b: B): TsArithmetic.Gt<A, B> {
+export function gt<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Gt<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a > b;
 }
 
 // Greater than or equal
-export function gte<A extends number, B extends number>(a: A, b: B): TsArithmetic.GtOrEq<A, B> {
+export function gte<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.GtOrEq<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a >= b;
 }
 
 // Less than
-export function lt<A extends number, B extends number>(a: A, b: B): TsArithmetic.Lt<A, B> {
+export function lt<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Lt<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a < b;
 }
 
 // Less than or equal
-export function lte<A extends number, B extends number>(a: A, b: B): TsArithmetic.LtOrEq<A, B> {
+export function lte<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.LtOrEq<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return a <= b;
 }
@@ -88,13 +112,19 @@ export function compare<A extends number, B extends number>(
 }
 
 // Min
-export function min<A extends number, B extends number>(a: A, b: B): TsArithmetic.Min<A, B> {
+export function min<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Min<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return Math.min(a, b);
 }
 
 // Max
-export function max<A extends number, B extends number>(a: A, b: B): TsArithmetic.Max<A, B> {
+export function max<A extends number, B extends number>(
+	a: A,
+	b: B,
+): TsArithmetic.Max<A, B> {
 	// @ts-expect-error: runtime value is not type-checked
 	return Math.max(a, b);
 }

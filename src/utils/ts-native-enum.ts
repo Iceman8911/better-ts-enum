@@ -8,7 +8,7 @@ export function removeReverseMappingFromNumericEnum<TEnum extends EnumLike>(
 	for (const k in numericEnum)
 		if (
 			Object.getOwnPropertyDescriptor(numericEnum, k) &&
-			(isNaN(+k) || typeof numericEnum[k] !== "string")
+			(Number.isNaN(+k) || typeof numericEnum[k] !== "string")
 		)
 			r[k] = numericEnum[k];
 

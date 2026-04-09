@@ -15,7 +15,12 @@ type EnumBuilderEntry<
 	TValue extends EnumValue = EnumValue,
 > = readonly [TKey, TValue];
 
-type LastEntry<T extends readonly EnumBuilderEntry[]> = T extends [...infer _, infer L] ? L : never;
+type LastEntry<T extends readonly EnumBuilderEntry[]> = T extends [
+	...infer _,
+	infer L,
+]
+	? L
+	: never;
 
 type FromEntries<T extends readonly EnumBuilderEntry[]> = {
 	[K in T[number] as K[0]]: K[1];
@@ -29,8 +34,9 @@ type AddMember<
 	? never
 	: [...TCurrentEnumBuilderState, readonly [TKey, TValue]];
 
-type GetMostRecentEnumValue<TCurrentEnumBuilderState extends readonly EnumBuilderEntry[]> =
-	LastEntry<TCurrentEnumBuilderState>[1];
+type GetMostRecentEnumValue<
+	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
+> = LastEntry<TCurrentEnumBuilderState>[1];
 
 type GetNextDefaultValueToUseAsEnumValue<
 	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
@@ -38,9 +44,13 @@ type GetNextDefaultValueToUseAsEnumValue<
 	TCurrentKey extends EnumKey,
 > = TBuilderConfig["valueType"] extends "number"
 	? GetMostRecentEnumValue<TCurrentEnumBuilderState> extends number
-		? _IncrementNumberByOneStage<GetMostRecentEnumValue<TCurrentEnumBuilderState>> extends never
+		? _IncrementNumberByOneStage<
+				GetMostRecentEnumValue<TCurrentEnumBuilderState>
+			> extends never
 			? 0
-			: _IncrementNumberByOneStage<GetMostRecentEnumValue<TCurrentEnumBuilderState>>
+			: _IncrementNumberByOneStage<
+					GetMostRecentEnumValue<TCurrentEnumBuilderState>
+				>
 		: 0
 	: TBuilderConfig["valueType"] extends "key"
 		? TCurrentKey
@@ -49,7 +59,8 @@ type GetNextDefaultValueToUseAsEnumValue<
 /** An alternative way of instantiating a `BasicEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
 export default class BasicEnumBuilder<
 	const TCurrentEnumBuilderState extends readonly EnumBuilderEntry[] = [],
-	const TConfig extends _BasicEnumClassBuilderConfig = _BasicEnumClassBuilderConfig,
+	const TConfig extends
+		_BasicEnumClassBuilderConfig = _BasicEnumClassBuilderConfig,
 > {
 	//@ts-expect-error Inference limitation
 	#enumState: FromEntries<TCurrentEnumBuilderState> = {};
@@ -89,7 +100,12 @@ export default class BasicEnumBuilder<
 			TConfig,
 			TKey
 		>,
-	>(key: TKey): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>, TConfig>;
+	>(
+		key: TKey,
+	): BasicEnumBuilder<
+		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		TConfig
+	>;
 	/** Chainer for adding an enum member with an explictly defined value.
 	 *
 	 * @throws if the key has already been added previously
@@ -97,7 +113,10 @@ export default class BasicEnumBuilder<
 	$<TKey extends EnumKey, TValue extends EnumValue>(
 		key: TKey,
 		value: TValue,
-	): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>, TConfig>;
+	): BasicEnumBuilder<
+		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		TConfig
+	>;
 	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums.
 	 *
 	 * @throws if the key has already been added previously
@@ -113,7 +132,10 @@ export default class BasicEnumBuilder<
 		callback: (
 			enumSoFar: Simplify<FromEntries<TCurrentEnumBuilderState>>,
 		) => TKey | readonly [TKey, TValue],
-	): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>, TConfig>;
+	): BasicEnumBuilder<
+		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		TConfig
+	>;
 	/** Chainer for adding more enum members with maximum type safety.
 	 *
 	 * @throws if the key has already been added previously
@@ -128,9 +150,14 @@ export default class BasicEnumBuilder<
 	>(
 		arg:
 			| TKey
-			| ((enumSoFar: FromEntries<TCurrentEnumBuilderState>) => TKey | readonly [TKey, TValue]),
+			| ((
+					enumSoFar: FromEntries<TCurrentEnumBuilderState>,
+			  ) => TKey | readonly [TKey, TValue]),
 		value?: TValue,
-	): BasicEnumBuilder<AddMember<TCurrentEnumBuilderState, TKey, TValue>, TConfig> {
+	): BasicEnumBuilder<
+		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		TConfig
+	> {
 		let resolvedKey: TKey;
 		let resolvedValue: TValue;
 
@@ -152,7 +179,9 @@ export default class BasicEnumBuilder<
 			//@ts-expect-error Inference limitation
 			resolvedValue =
 				value ??
-				(this.#shouldUseNumberAsDefaultValue ? this.#defaultEntryNumberValue : resolvedKey);
+				(this.#shouldUseNumberAsDefaultValue
+					? this.#defaultEntryNumberValue
+					: resolvedKey);
 		}
 
 		if (resolvedKey in this.#enumState) {
@@ -181,8 +210,11 @@ export default class BasicEnumBuilder<
 		return valueType === "number";
 	}
 
-	//@ts-expect-error The simplified type is much more readable
-	build(): _GetBasicEnumShape<Simplify<FromEntries<TCurrentEnumBuilderState>>, TConfig> {
+	build(): _GetBasicEnumShape<
+		//@ts-expect-error The simplified type is much more readable
+		Simplify<FromEntries<TCurrentEnumBuilderState>>,
+		TConfig
+	> {
 		//@ts-expect-error The simplified type is much more readable
 		return BasicEnum.new(this.#enumState, this.#config);
 	}

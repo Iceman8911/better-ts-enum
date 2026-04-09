@@ -8,3 +8,4 @@
 - [ ] Find out how to make jsdocs work ergonomically with the builder.
 - [ ] Maybe support instantiating an enum from the result of [...MyEnum].
 - [ ] Bit-flag enums???
+- [ ] Maybe add a new config `prefix` for automatically prefixing a given string to auto-generated enum values.
