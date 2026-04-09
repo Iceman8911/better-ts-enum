@@ -220,8 +220,8 @@ describe(BasicEnumBuilder.name, () => {
 	it("should not apply prefix/suffix to explicit non-string values", () => {
 		const mixedEnum = BasicEnumBuilder.new({
 			valueType: "number",
-			prefix: "pre-",
 			suffix: "-post",
+			prefix: "pre-",
 		})
 			.$("FOO", 42)
 			.$("BAR")
