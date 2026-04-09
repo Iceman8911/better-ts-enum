@@ -9,7 +9,7 @@ import {
 	type _SharedEnumClassConfig,
 	type _SharedNamespacedMethods,
 } from "../_shared";
-import type BasicEnum from "./basic-enum";
+import type { BasicEnum } from "./basic-enum";
 
 type _GetNominalOrRegularEnumShape<
 	TEnumShape extends EnumLike,

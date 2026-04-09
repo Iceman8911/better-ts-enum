@@ -1,7 +1,7 @@
 import type { Simplify } from "type-fest";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import type { _IncrementNumberByOneStage } from "../../types/_utils";
-import BasicEnum from "./basic-enum";
+import { BasicEnum } from "./basic-enum";
 import {
 	_DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG,
 	type _BasicEnumClassBuilderConfig,
@@ -68,7 +68,7 @@ type GetNextDefaultValueToUseAsEnumValue<
 		: never;
 
 /** An alternative way of instantiating a `BasicEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
-export default class BasicEnumBuilder<
+export class BasicEnumBuilder<
 	const TCurrentEnumBuilderState extends readonly EnumBuilderEntry[] = [],
 	const TConfig extends
 		_BasicEnumClassBuilderConfig = _BasicEnumClassBuilderConfig,

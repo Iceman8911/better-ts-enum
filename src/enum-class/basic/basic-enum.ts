@@ -14,7 +14,9 @@ import {
 	type _GetBasicEnumShape,
 } from "./_shared";
 
-export default class BasicEnum<
+const { getOwnPropertyDescriptor, defineProperty } = Object;
+
+export class BasicEnum<
 	const TEnumShape extends EnumLike,
 	const TConfig extends _BasicEnumClassConfig,
 > {
@@ -29,7 +31,7 @@ export default class BasicEnum<
 	private constructor(enumLike: TEnumShape, _config: TConfig) {
 		for (const k in enumLike)
 			if (
-				Object.getOwnPropertyDescriptor(enumLike, k) &&
+				getOwnPropertyDescriptor(enumLike, k) &&
 				(Number.isNaN(+k) || typeof enumLike[k] !== "string")
 			) {
 				if (k === "$")
@@ -61,7 +63,7 @@ export default class BasicEnum<
 			},
 		};
 
-		Object.defineProperty(this, "$", {
+		defineProperty(this, "$", {
 			value: namespacedMethods,
 			enumerable: false,
 			configurable: true,

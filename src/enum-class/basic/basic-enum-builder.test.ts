@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
-import BasicEnumBuilder from "./basic-enum-builder";
+import { BasicEnumBuilder } from "./basic-enum-builder";
 import { add, multiply } from "../../arithmetic";
 
 describe(BasicEnumBuilder.name, () => {
