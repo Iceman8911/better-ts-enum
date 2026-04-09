@@ -26,13 +26,24 @@ type FromEntries<T extends readonly EnumBuilderEntry[]> = {
 	[K in T[number] as K[0]]: K[1];
 };
 
+type _ApplyPrefixSuffixToStringValue<
+	TValue extends EnumValue,
+	TBuilderConfig extends _BasicEnumClassBuilderConfig,
+> = TValue extends string
+	? `${TBuilderConfig["prefix"]}${TValue}${TBuilderConfig["suffix"]}`
+	: TValue;
+
 type AddMember<
 	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
 	TKey extends EnumKey,
 	TValue extends EnumValue,
+	TBuilderConfig extends _BasicEnumClassBuilderConfig,
 > = TKey extends TCurrentEnumBuilderState[number][0]
 	? never
-	: [...TCurrentEnumBuilderState, readonly [TKey, TValue]];
+	: [
+			...TCurrentEnumBuilderState,
+			readonly [TKey, _ApplyPrefixSuffixToStringValue<TValue, TBuilderConfig>],
+		];
 
 type GetMostRecentEnumValue<
 	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
@@ -65,11 +76,10 @@ export default class BasicEnumBuilder<
 	//@ts-expect-error Inference limitation
 	#enumState: FromEntries<TCurrentEnumBuilderState> = {};
 	#lastValue?: EnumValue;
-	#config: Partial<TConfig>;
+	#config: TConfig;
 
-	private constructor(config?: Partial<TConfig>) {
-		//@ts-expect-error Inference limitation
-		this.#config = { ..._DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG, ...config };
+	private constructor(config: TConfig) {
+		this.#config = config;
 	}
 
 	/**
@@ -86,24 +96,29 @@ export default class BasicEnumBuilder<
 		>
 	> {
 		//@ts-expect-error Inference limitation
-		return new BasicEnumBuilder(config);
+		return new BasicEnumBuilder({
+			..._DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG,
+			...config,
+		});
 	}
 
 	/** Chainer for adding an enum member with an auto-incremented and inferred numeric value similar to native typescript enums.
 	 *
 	 * @throws if the key has already been added previously
 	 */
-	$<
-		TKey extends EnumKey,
-		TValue extends EnumValue = GetNextDefaultValueToUseAsEnumValue<
-			TCurrentEnumBuilderState,
-			TConfig,
-			TKey
-		>,
-	>(
+	$<TKey extends EnumKey>(
 		key: TKey,
 	): BasicEnumBuilder<
-		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		AddMember<
+			TCurrentEnumBuilderState,
+			TKey,
+			GetNextDefaultValueToUseAsEnumValue<
+				TCurrentEnumBuilderState,
+				TConfig,
+				TKey
+			>,
+			TConfig
+		>,
 		TConfig
 	>;
 	/** Chainer for adding an enum member with an explictly defined value.
@@ -114,7 +129,7 @@ export default class BasicEnumBuilder<
 		key: TKey,
 		value: TValue,
 	): BasicEnumBuilder<
-		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums.
@@ -133,7 +148,7 @@ export default class BasicEnumBuilder<
 			enumSoFar: Simplify<FromEntries<TCurrentEnumBuilderState>>,
 		) => TKey | readonly [TKey, TValue],
 	): BasicEnumBuilder<
-		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding more enum members with maximum type safety.
@@ -155,7 +170,7 @@ export default class BasicEnumBuilder<
 			  ) => TKey | readonly [TKey, TValue]),
 		value?: TValue,
 	): BasicEnumBuilder<
-		AddMember<TCurrentEnumBuilderState, TKey, TValue>,
+		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	> {
 		let resolvedKey: TKey;
@@ -166,22 +181,23 @@ export default class BasicEnumBuilder<
 
 			if (Array.isArray(resolved)) {
 				resolvedKey = resolved[0];
-				resolvedValue = resolved[1];
+				resolvedValue = this.#normalizeValue(resolved[1]);
 			} else {
 				resolvedKey = resolved as TKey;
 				//@ts-expect-error Inference limitation
 				resolvedValue = this.#shouldUseNumberAsDefaultValue
 					? this.#defaultEntryNumberValue
-					: resolvedKey;
+					: this.#normalizeValue(resolvedKey);
 			}
 		} else {
 			resolvedKey = arg as TKey;
 			//@ts-expect-error Inference limitation
-			resolvedValue =
+			resolvedValue = this.#normalizeValue(
 				value ??
-				(this.#shouldUseNumberAsDefaultValue
-					? this.#defaultEntryNumberValue
-					: resolvedKey);
+					(this.#shouldUseNumberAsDefaultValue
+						? this.#defaultEntryNumberValue
+						: resolvedKey),
+			);
 		}
 
 		if (resolvedKey in this.#enumState) {
@@ -204,10 +220,22 @@ export default class BasicEnumBuilder<
 		return this.#lastValue + 1;
 	}
 
-	get #shouldUseNumberAsDefaultValue(): boolean {
-		const { valueType = "number" } = this.#config;
+	#normalizeValue<TValue extends EnumValue>(
+		value: TValue,
+	): _ApplyPrefixSuffixToStringValue<TValue, TConfig> {
+		const { prefix, suffix } = this.#config;
 
-		return valueType === "number";
+		if (typeof value === "string" && (prefix || suffix)) {
+			//@ts-expect-error Inference limitation
+			return `${prefix}${value}${suffix}`;
+		}
+
+		//@ts-expect-error Inference limitation
+		return value;
+	}
+
+	get #shouldUseNumberAsDefaultValue(): boolean {
+		return this.#config.valueType === "number";
 	}
 
 	build(): _GetBasicEnumShape<

@@ -55,6 +55,8 @@ export interface _DefaultBasicEnumClassBuilderConfig
 	readonly freeze: true;
 	readonly nominal: "";
 	readonly valueType: "number";
+	readonly prefix: "";
+	readonly suffix: "";
 }
 
 export const _DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG: _DefaultBasicEnumClassBuilderConfig =
