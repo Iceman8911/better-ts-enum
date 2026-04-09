@@ -62,10 +62,47 @@ const NumberEnum = BasicEnumBuilder.new().$("FOO").$("BAR").$("BAZ").build();
 const StringEnum = BasicEnumBuilder.new({ valueType: "key" }).$("FOO").$("BAR").$("BAZ").build();
 // StringEnum.FOO === "FOO", StringEnum.BAR === "BAR", StringEnum.BAZ === "BAZ"
 
+// Use prefix/suffix to build string URLs or namespaced keys
+const UrlEnum = BasicEnumBuilder.new({
+	valueType: "key",
+	prefix: "https://example.com/api/",
+	suffix: "/v1",
+})
+	.$("SECURITY_CHECK")
+	.$("CHECK_USER", "user_checks")
+	.build();
+// UrlEnum.SECURITY_CHECK === "https://example.com/api/SECURITY_CHECK/v1"
+// UrlEnum.CHECK_USER === "https://example.com/api/user_checks/v1"
+
 // You can still override the value explicitly:
 const MixedEnum = BasicEnumBuilder.new({ valueType: "key" }).$("FOO").$("BAR", 42).$("BAZ").build();
 // MixedEnum.FOO === "FOO", MixedEnum.BAR === 42, MixedEnum.BAZ === "BAZ"
 ```
+
+---
+
+### Using `prefix` and `suffix` for String Value Generation
+
+You can use the `prefix` and `suffix` options to automatically prepend/append strings to any string-valued enum member (including explicit string values). This is especially useful for generating namespaced keys, URLs, or other structured string values.
+
+```typescript
+import { BasicEnumBuilder } from "better-ts-enum/basic-enum";
+
+const UrlEnum = BasicEnumBuilder.new({
+  valueType: "key",
+  prefix: "https://example.com/api/",
+  suffix: "/v1",
+})
+  .$("SECURITY_CHECK")
+  .$("CHECK_USER", "user_checks")
+  .build();
+// UrlEnum.SECURITY_CHECK === "https://example.com/api/SECURITY_CHECK/v1"
+// UrlEnum.CHECK_USER === "https://example.com/api/user_checks/v1"
+```
+
+- `prefix` and `suffix` only affect string values (auto-generated or explicit).
+- Non-string values are left unchanged.
+- Both options default to the empty string.
 
 ---
 
@@ -76,6 +113,8 @@ const MixedEnum = BasicEnumBuilder.new({ valueType: "key" }).$("FOO").$("BAR", 4
 | freeze    | boolean             | `true`     | If `true`, the enum is deeply frozen (immutable). If `false`, it is mutable at runtime.                                                                                                                                                                                                                                          |
 | nominal   | string              | `""`       | If non-empty, values are nominally typed (not assignable to raw numbers/strings). Use a unique tag per enum for strict type isolation. <br><br/><br>**Note:** Nominal typing is enforced only at the TypeScript type level and has no runtime effect. If you need to bypass nominal typing, you can use a type cast (see below). |
 | valueType | `"number" \| "key"` | `"number"` | Dictates the default value for enum members added without an explicit value:<br>- `"number"`: Uses an auto-incrementing number (like native enums).<br>- `"key"`: Uses the enum key as its value (string).<br>Useful for environments that require string-only IDs or for extension messaging.                                   |
+| prefix | `string` | `""` | Optional string to prepend to any string enum value, including explicit string values. Has no effect on non-string values. |
+| suffix | `string` | `""` | Optional string to append to any string enum value, including explicit string values. Has no effect on non-string values. |
 
 ---
 

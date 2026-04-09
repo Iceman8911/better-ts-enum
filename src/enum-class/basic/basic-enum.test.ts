@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
-import BasicEnum from "./basic-enum";
+import { BasicEnum } from "./basic-enum";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
 

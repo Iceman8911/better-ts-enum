@@ -63,17 +63,35 @@ export interface _SharedEnumClassBuilderConfig extends _SharedEnumClassConfig {
 	 * @default "number"
 	 */
 	valueType: "number" | "key";
+
+	/** Optional prefix to apply to any string enum value.
+	 *
+	 * This is applied to both auto-generated key values and explicit string values.
+	 * @default ""
+	 */
+	prefix: string;
+
+	/** Optional suffix to apply to any string enum value.
+	 *
+	 * This is applied to both auto-generated key values and explicit string values.
+	 * @default ""
+	 */
+	suffix: string;
 }
 
 export interface _DefaultSharedEnumClassBuilderConfig
 	extends _DefaultSharedEnumClassConfig {
 	readonly valueType: "number";
+	readonly prefix: "";
+	readonly suffix: "";
 }
 
 export const _DEFAULT_SHARED_ENUM_CLASS_BUILDER_CONFIG: _DefaultSharedEnumClassBuilderConfig =
 	{
 		..._DEFAULT_SHARED_ENUM_CLASS_CONFIG,
 		valueType: "number",
+		prefix: "",
+		suffix: "",
 	};
 
 export type _GetUserEnumConfigAfterApplyingDefaults<

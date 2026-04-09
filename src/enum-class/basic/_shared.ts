@@ -9,7 +9,7 @@ import {
 	type _SharedEnumClassConfig,
 	type _SharedNamespacedMethods,
 } from "../_shared";
-import type BasicEnum from "./basic-enum";
+import type { BasicEnum } from "./basic-enum";
 
 type _GetNominalOrRegularEnumShape<
 	TEnumShape extends EnumLike,
@@ -55,6 +55,8 @@ export interface _DefaultBasicEnumClassBuilderConfig
 	readonly freeze: true;
 	readonly nominal: "";
 	readonly valueType: "number";
+	readonly prefix: "";
+	readonly suffix: "";
 }
 
 export const _DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG: _DefaultBasicEnumClassBuilderConfig =

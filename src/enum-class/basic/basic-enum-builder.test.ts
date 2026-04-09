@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
-import BasicEnumBuilder from "./basic-enum-builder";
+import { BasicEnumBuilder } from "./basic-enum-builder";
 import { add, multiply } from "../../arithmetic";
 
 describe(BasicEnumBuilder.name, () => {
@@ -186,5 +186,50 @@ describe(BasicEnumBuilder.name, () => {
 		expect(mixedEnum.foo).toBe("foo");
 		expect(mixedEnum.bar).toBe(42);
 		expect(mixedEnum.baz).toBe("baz");
+	});
+
+	it("should apply prefix and suffix to auto-generated and explicit string values", () => {
+		const stringEnum = BasicEnumBuilder.new({
+			valueType: "key",
+			prefix: "https://example.com/api/",
+			suffix: "/v1",
+		})
+			.$("SECURITY_CHECK")
+			.$("CHECK_USER", "user_checks")
+			.$("DASHBOARD")
+			.build();
+
+		expect(stringEnum.SECURITY_CHECK).toBe(
+			"https://example.com/api/SECURITY_CHECK/v1",
+		);
+		expectTypeOf(stringEnum.SECURITY_CHECK).toEqualTypeOf(
+			"https://example.com/api/SECURITY_CHECK/v1" as const,
+		);
+		expect(stringEnum.CHECK_USER).toBe(
+			"https://example.com/api/user_checks/v1",
+		);
+		expectTypeOf(stringEnum.CHECK_USER).toEqualTypeOf(
+			"https://example.com/api/user_checks/v1" as const,
+		);
+		expect(stringEnum.DASHBOARD).toBe("https://example.com/api/DASHBOARD/v1");
+		expectTypeOf(stringEnum.DASHBOARD).toEqualTypeOf(
+			"https://example.com/api/DASHBOARD/v1" as const,
+		);
+	});
+
+	it("should not apply prefix/suffix to explicit non-string values", () => {
+		const mixedEnum = BasicEnumBuilder.new({
+			valueType: "number",
+			suffix: "-post",
+			prefix: "pre-",
+		})
+			.$("FOO", 42)
+			.$("BAR")
+			.build();
+
+		expect(mixedEnum.FOO).toBe(42);
+		expect(mixedEnum.BAR).toBe(43);
+		expectTypeOf<typeof mixedEnum.FOO>().toEqualTypeOf<42>();
+		expectTypeOf<typeof mixedEnum.BAR>().toEqualTypeOf<43>();
 	});
 });
