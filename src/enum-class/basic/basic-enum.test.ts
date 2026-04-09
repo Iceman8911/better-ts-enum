@@ -7,9 +7,27 @@ type TestEnumArg = typeof testEnumArg;
 type TestEnumArgKeys = keyof TestEnumArg;
 type TestEnumArgValues = TestEnumArg[TestEnumArgKeys];
 
-const testEnumArg = { bar: 2, baz: "3", bob: 4.5, dave: "5.55", foo: 1 } as const;
-const testEnumKeys = ["bar", "baz", "bob", "dave", "foo"] as const satisfies TestEnumArgKeys[];
-const testEnumValues = [2, "3", 4.5, "5.55", 1] as const satisfies TestEnumArgValues[];
+const testEnumArg = {
+	bar: 2,
+	baz: "3",
+	bob: 4.5,
+	dave: "5.55",
+	foo: 1,
+} as const;
+const testEnumKeys = [
+	"bar",
+	"baz",
+	"bob",
+	"dave",
+	"foo",
+] as const satisfies TestEnumArgKeys[];
+const testEnumValues = [
+	2,
+	"3",
+	4.5,
+	"5.55",
+	1,
+] as const satisfies TestEnumArgValues[];
 const testEnumEntries = [
 	["bar", 2],
 	["baz", "3"],
@@ -37,7 +55,9 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should throw if the input contains the reserved namespace key `$`", () => {
-		expect(() => BasicEnum.new({ $: "should throw" })).toThrowError(/\$.+key.+reserved/);
+		expect(() => BasicEnum.new({ $: "should throw" })).toThrowError(
+			/\$.+key.+reserved/,
+		);
 	});
 
 	it("should not allow the namespace prop '$' to be assignable under normal means", () => {
@@ -115,8 +135,12 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should allow easy inference of the underlying enum type", () => {
-		expectTypeOf<typeof testEnum.$.infer.keys>().toEqualTypeOf<TestEnumArgKeys>();
-		expectTypeOf<typeof testEnum.$.infer.values>().toEqualTypeOf<TestEnumArgValues>();
+		expectTypeOf<
+			typeof testEnum.$.infer.keys
+		>().toEqualTypeOf<TestEnumArgKeys>();
+		expectTypeOf<
+			typeof testEnum.$.infer.values
+		>().toEqualTypeOf<TestEnumArgValues>();
 	});
 
 	it("should throw upon accessing `$.infer` since it's a type-only construct", () => {
@@ -126,8 +150,14 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should infer nominal typing when nominal: true is set", () => {
-		const nominalEnum1 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal1" });
-		const nominalEnum2 = BasicEnum.new({ FOO: 1, BAR: 2 }, { nominal: "nominal2" });
+		const nominalEnum1 = BasicEnum.new(
+			{ FOO: 1, BAR: 2 },
+			{ nominal: "nominal1" },
+		);
+		const nominalEnum2 = BasicEnum.new(
+			{ FOO: 1, BAR: 2 },
+			{ nominal: "nominal2" },
+		);
 
 		expectTypeOf<typeof nominalEnum1.BAR>().toExtend<2>();
 		expectTypeOf<2>().not.toExtend<typeof nominalEnum1.BAR>();
@@ -139,7 +169,9 @@ describe(BasicEnum.name, () => {
 		//@ts-expect-error For Testing
 		expect(nominalEnum1.FOO).toBe(1);
 
-		expectTypeOf<typeof nominalEnum1.BAR>().not.toEqualTypeOf<typeof nominalEnum2.BAR>();
+		expectTypeOf<typeof nominalEnum1.BAR>().not.toEqualTypeOf<
+			typeof nominalEnum2.BAR
+		>();
 	});
 
 	it("should infer non-nominal typing when nominal: false (default)", () => {
@@ -182,7 +214,11 @@ describe(BasicEnum.name, () => {
 		const convertedEnum = BasicEnum.new(NativeEnum);
 
 		expect([...convertedEnum.$.keys()]).toEqual(["FOO", "BAR", "BAZ"]);
-		expect([...convertedEnum.$.values()]).toEqual([NativeEnum.FOO, NativeEnum.BAR, NativeEnum.BAZ]);
+		expect([...convertedEnum.$.values()]).toEqual([
+			NativeEnum.FOO,
+			NativeEnum.BAR,
+			NativeEnum.BAZ,
+		]);
 		expect([...convertedEnum.$.entries()]).toStrictEqual([
 			["FOO", NativeEnum.FOO],
 			["BAR", NativeEnum.BAR],
@@ -203,7 +239,9 @@ describe(BasicEnum.name, () => {
 
 		const strippedEnumInstance = BasicEnum.new(ReverseMappedNativeEnum);
 
-		expect(strippedEnumInstance.$.raw).not.toStrictEqual(ReverseMappedNativeEnum);
+		expect(strippedEnumInstance.$.raw).not.toStrictEqual(
+			ReverseMappedNativeEnum,
+		);
 		expect(strippedEnumInstance.$.raw).toStrictEqual(
 			removeReverseMappingFromNumericEnum(ReverseMappedNativeEnum),
 		);

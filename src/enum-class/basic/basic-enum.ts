@@ -1,4 +1,9 @@
-import type { EnumEntries, EnumKeys, EnumLike, EnumValues } from "../../types/enum/enum-class";
+import type {
+	EnumEntries,
+	EnumKeys,
+	EnumLike,
+	EnumValues,
+} from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
 import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
 import {
@@ -25,9 +30,12 @@ export default class BasicEnum<
 		for (const k in enumLike)
 			if (
 				Object.getOwnPropertyDescriptor(enumLike, k) &&
-				(isNaN(+k) || typeof enumLike[k] !== "string")
+				(Number.isNaN(+k) || typeof enumLike[k] !== "string")
 			) {
-				if (k === "$") throw Error("'$' cannot be used as an enum key since it is reserved.");
+				if (k === "$")
+					throw Error(
+						"'$' cannot be used as an enum key since it is reserved.",
+					);
 
 				//@ts-expect-error Inference Limitation
 				this[k] = enumLike[k];
@@ -115,11 +123,15 @@ export default class BasicEnum<
 		}
 	}
 
-	#isKey(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
+	#isKey(
+		arg: unknown,
+	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
 		return `${arg}` in this && arg !== "$";
 	}
 
-	#isValue(arg: unknown): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
+	#isValue(
+		arg: unknown,
+	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
 		let isPresent = false;
 
 		for (const value of this.#values()) {
@@ -133,7 +145,9 @@ export default class BasicEnum<
 	}
 
 	get #infer() {
-		throw Error("`this.#infer` is a type-only property. Do not call it in runtime code.");
+		throw Error(
+			"`this.#infer` is a type-only property. Do not call it in runtime code.",
+		);
 	}
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {

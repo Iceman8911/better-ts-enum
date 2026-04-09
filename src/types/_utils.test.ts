@@ -28,7 +28,11 @@ describe("_IncrementNumberByOneStage", () => {
 	});
 
 	it("should not affect 'out-of-range' numbers like Infinity, and NaN", () => {
-		expectTypeOf<_IncrementNumberByOneStage<typeof Infinity>>().toEqualTypeOf<number>();
-		expectTypeOf<_IncrementNumberByOneStage<typeof NaN>>().toEqualTypeOf<number>();
+		expectTypeOf<
+			_IncrementNumberByOneStage<typeof Infinity>
+		>().toEqualTypeOf<number>();
+		expectTypeOf<
+			_IncrementNumberByOneStage<typeof NaN>
+		>().toEqualTypeOf<number>();
 	});
 });
