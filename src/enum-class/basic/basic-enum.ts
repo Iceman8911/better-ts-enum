@@ -14,7 +14,7 @@ import {
 	type _GetBasicEnumShape,
 } from "./_shared";
 
-const { getOwnPropertyDescriptor, defineProperty } = Object;
+const { hasOwn, defineProperty } = Object;
 
 export class BasicEnum<
 	const TEnumShape extends EnumLike,
@@ -31,7 +31,7 @@ export class BasicEnum<
 	private constructor(enumLike: TEnumShape, _config: TConfig) {
 		for (const k in enumLike)
 			if (
-				getOwnPropertyDescriptor(enumLike, k) &&
+				hasOwn(enumLike, k) &&
 				(Number.isNaN(+k) || typeof enumLike[k] !== "string")
 			) {
 				if (k === "$")
