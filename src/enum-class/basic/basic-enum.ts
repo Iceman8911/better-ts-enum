@@ -54,10 +54,6 @@ export class BasicEnum<
 			isKey: self.#isKey.bind(self),
 			isValue: self.#isValue.bind(self),
 			//@ts-expect-error Inference Limitation
-			get infer() {
-				return self.#infer;
-			},
-			//@ts-expect-error Inference Limitation
 			get raw() {
 				return { ...self };
 			},
@@ -145,12 +141,6 @@ export class BasicEnum<
 		}
 
 		return isPresent;
-	}
-
-	get #infer() {
-		throw Error(
-			"`this.#infer` is a type-only property. Do not call it in runtime code.",
-		);
 	}
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {

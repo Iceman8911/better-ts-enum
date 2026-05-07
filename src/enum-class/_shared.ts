@@ -126,9 +126,7 @@ export interface _SharedNamespacedMethods<TEnumShape extends EnumLike> {
 
 	/** Solely for inferring the types of the enum.
 	 *
-	 * Calling this in runtime code will throw.
-	 *
-	 * @throws if called in runtime code
+	 * Is `undefined` at runtime.
 	 *
 	 * @example
 	 *
