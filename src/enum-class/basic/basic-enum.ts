@@ -63,6 +63,7 @@ export class BasicEnum<
 			},
 		};
 
+		// `defineProperty` is used to explictly make this readonly and non-enumerable
 		defineProperty(this, "$", {
 			value: namespacedMethods,
 			enumerable: false,
