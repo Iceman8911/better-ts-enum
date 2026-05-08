@@ -1,7 +1,7 @@
 {
 	"name": "better-ts-enum",
 	"description": "Yet another typescript enum replacement. Designed for minimal bundle size, maximum type-safety, and ergonomics.",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"type": "module",
 	"files": [
 		"dist"
@@ -54,7 +54,6 @@
 		"dev": "bunup --watch",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
-		"prepare": "husky",
 		"release": "bumpp --commit --push --tag",
 		"test": "bun test",
 		"test:coverage": "bun test --coverage",
