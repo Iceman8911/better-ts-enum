@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
 import { BasicEnum } from "./basic-enum";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
-import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
+import { copyEnumLikeEntriesWithoutReverseMapping } from "../../utils/ts-native-enum";
 
 type TestEnumArg = typeof testEnumArg;
 type TestEnumArgKeys = keyof TestEnumArg;
@@ -237,10 +237,14 @@ describe(BasicEnum.name, () => {
 			ReverseMappedNativeEnum,
 		);
 		expect(strippedEnumInstance.$.raw).toStrictEqual(
-			removeReverseMappingFromNumericEnum(ReverseMappedNativeEnum),
+			copyEnumLikeEntriesWithoutReverseMapping(
+				ReverseMappedNativeEnum,
+			) as never,
 		);
 		expectTypeOf(strippedEnumInstance.$.raw).toEqualTypeOf(
-			removeReverseMappingFromNumericEnum(ReverseMappedNativeEnum),
+			copyEnumLikeEntriesWithoutReverseMapping(
+				ReverseMappedNativeEnum,
+			) as never,
 		);
 	});
 

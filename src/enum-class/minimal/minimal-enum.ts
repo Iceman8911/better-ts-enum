@@ -1,8 +1,9 @@
 import type { EnumLike } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
 import { EnumClass } from "../_shared";
-import { freeze, hasOwn } from "../../utils/object";
+import { freeze } from "../../utils/object";
 import type { MinimalEnumClass } from "./_shared";
+import { copyEnumLikeEntriesWithoutReverseMapping } from "../../utils/ts-native-enum";
 
 type NamespacedMethods<TEnumShape extends EnumLike> = Pick<
 	EnumClass.Methods<TEnumShape>,
@@ -16,14 +17,7 @@ export class MinimalEnum<
 	declare readonly $: ReadonlyDeep<NamespacedMethods<TEnumShape>>;
 
 	protected constructor(enumLike: TEnumShape, _config: TConfig) {
-		for (const k in enumLike)
-			if (
-				hasOwn(enumLike, k) &&
-				(Number.isNaN(+k) || typeof enumLike[k] !== "string")
-			) {
-				//@ts-expect-error Inference limitation
-				this[k] = enumLike[k];
-			}
+		copyEnumLikeEntriesWithoutReverseMapping(enumLike, this);
 	}
 
 	static new<
