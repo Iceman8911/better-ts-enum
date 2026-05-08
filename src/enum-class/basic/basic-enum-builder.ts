@@ -1,30 +1,37 @@
 /** biome-ignore-all lint/suspicious/noMisleadingInstantiator: <biome is confused> */
 import type { Simplify } from "type-fest";
-import { BasicEnum } from "./basic-enum";
-import { EnumBuilderNs } from "../_shared";
-import { MinimalEnumBuilder } from "../minimal/minimal-enum-builder";
-import type { BasicEnumNs } from "./_shared";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
+import {
+	type AddMember,
+	type BuilderEntry,
+	type Config,
+	DefaultConfig,
+	type FromEntries,
+	type GetBuilderConfig,
+	type GetNextDefaultValueToUseAsEnumValue,
+} from "../_shared/enum-builder";
+import { MinimalEnumBuilder } from "../minimal/minimal-enum-builder";
+import type { GetShape } from "./_shared";
+import { BasicEnum } from "./basic-enum";
 
 /** An alternative way of instantiating a `BasicEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
 export class BasicEnumBuilder<
-	const TCurrentEnumBuilderState extends
-		readonly EnumBuilderNs.BuilderEntry[] = [],
-	const TConfig extends EnumBuilderNs.Config = EnumBuilderNs.DefaultConfig,
+	const TCurrentEnumBuilderState extends readonly BuilderEntry[] = [],
+	const TConfig extends Config = DefaultConfig,
 > extends MinimalEnumBuilder<TCurrentEnumBuilderState, TConfig> {
 	/**
 	 * Static factory for partial config inference with defaults.
 	 */
-	static override new(): BasicEnumBuilder<[], EnumBuilderNs.DefaultConfig>;
-	static override new<const TConfig extends Partial<EnumBuilderNs.Config>>(
+	static override new(): BasicEnumBuilder<[], DefaultConfig>;
+	static override new<const TConfig extends Partial<Config>>(
 		config: TConfig,
-	): BasicEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>>;
-	static override new<const TConfig extends Partial<EnumBuilderNs.Config>>(
+	): BasicEnumBuilder<[], GetBuilderConfig<TConfig>>;
+	static override new<const TConfig extends Partial<Config>>(
 		config?: TConfig,
-	): BasicEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>> {
+	): BasicEnumBuilder<[], GetBuilderConfig<TConfig>> {
 		//@ts-expect-error Inference limitation
 		return new BasicEnumBuilder({
-			...EnumBuilderNs.DefaultConfig,
+			...DefaultConfig,
 			...config,
 		});
 	}
@@ -36,10 +43,10 @@ export class BasicEnumBuilder<
 	override $<TKey extends EnumKey>(
 		key: TKey,
 	): BasicEnumBuilder<
-		EnumBuilderNs.AddMember<
+		AddMember<
 			TCurrentEnumBuilderState,
 			TKey,
-			EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
+			GetNextDefaultValueToUseAsEnumValue<
 				TCurrentEnumBuilderState,
 				TConfig,
 				TKey
@@ -56,7 +63,7 @@ export class BasicEnumBuilder<
 		key: TKey,
 		value: TValue,
 	): BasicEnumBuilder<
-		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums.
@@ -65,18 +72,17 @@ export class BasicEnumBuilder<
 	 */
 	override $<
 		TKey extends EnumKey,
-		TValue extends
-			EnumValue = EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
+		TValue extends EnumValue = GetNextDefaultValueToUseAsEnumValue<
 			TCurrentEnumBuilderState,
 			TConfig,
 			TKey
 		>,
 	>(
 		callback: (
-			enumSoFar: Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
+			enumSoFar: Simplify<FromEntries<TCurrentEnumBuilderState>>,
 		) => TKey | readonly [TKey, TValue],
 	): BasicEnumBuilder<
-		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding more enum members with maximum type safety.
@@ -85,8 +91,7 @@ export class BasicEnumBuilder<
 	 */
 	override $<
 		TKey extends EnumKey,
-		TValue extends
-			EnumValue = EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
+		TValue extends EnumValue = GetNextDefaultValueToUseAsEnumValue<
 			TCurrentEnumBuilderState,
 			TConfig,
 			TKey
@@ -95,20 +100,20 @@ export class BasicEnumBuilder<
 		arg:
 			| TKey
 			| ((
-					enumSoFar: EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>,
+					enumSoFar: FromEntries<TCurrentEnumBuilderState>,
 			  ) => TKey | readonly [TKey, TValue]),
 		value?: TValue,
 	): BasicEnumBuilder<
-		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	> {
 		//@ts-expect-error Inference limitation
 		return super.$(arg, value);
 	}
 
-	override build(): BasicEnumNs.GetShape<
+	override build(): GetShape<
 		//@ts-expect-error The simplified type is much more readable
-		Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
+		Simplify<FromEntries<TCurrentEnumBuilderState>>,
 		TConfig
 	> {
 		return BasicEnum.new(this.s, this.c) as never;

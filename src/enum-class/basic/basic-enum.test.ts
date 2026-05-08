@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
-import { BasicEnum } from "./basic-enum";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import { copyEnumLikeEntriesWithoutReverseMapping } from "../../utils/ts-native-enum";
+import { BasicEnum } from "./basic-enum";
 
 type TestEnumArg = typeof testEnumArg;
 type TestEnumArgKeys = keyof TestEnumArg;
@@ -145,11 +145,11 @@ describe(BasicEnum.name, () => {
 
 	it("should infer nominal typing when nominal: true is set", () => {
 		const nominalEnum1 = BasicEnum.new(
-			{ FOO: 1, BAR: 2 },
+			{ BAR: 2, FOO: 1 },
 			{ nominal: "nominal1" },
 		);
 		const nominalEnum2 = BasicEnum.new(
-			{ FOO: 1, BAR: 2 },
+			{ BAR: 2, FOO: 1 },
 			{ nominal: "nominal2" },
 		);
 
@@ -169,7 +169,7 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should infer non-nominal typing when nominal: false (default)", () => {
-		const regularEnum = BasicEnum.new({ FOO: 1, BAR: 2 });
+		const regularEnum = BasicEnum.new({ BAR: 2, FOO: 1 });
 
 		type Values = typeof regularEnum.$.infer.values;
 		const ok1: Values = 1;
@@ -179,7 +179,7 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should be readonly at type-level and frozen at runtime when freeze: true (default)", () => {
-		const frozenEnum = BasicEnum.new({ FOO: 1, BAR: 2 });
+		const frozenEnum = BasicEnum.new({ BAR: 2, FOO: 1 });
 
 		expect(() => {
 			//@ts-expect-error For testing
@@ -192,7 +192,7 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should NOT be readonly at type-level and NOT frozen at runtime when freeze: false", () => {
-		const unfrozenEnum = BasicEnum.new({ FOO: 1, BAR: 2 }, { freeze: false });
+		const unfrozenEnum = BasicEnum.new({ BAR: 2, FOO: 1 }, { freeze: false });
 
 		unfrozenEnum.FOO = 1;
 		expect(Object.isFrozen(unfrozenEnum)).toBe(false);
@@ -303,7 +303,7 @@ describe(BasicEnum.name, () => {
 	});
 
 	it("should support unicode and emoji keys/values", () => {
-		const enumObj = BasicEnum.new({ "😀": "🎉", ключ: "значение" });
+		const enumObj = BasicEnum.new({ ключ: "значение", "😀": "🎉" });
 		expect(enumObj["😀"]).toBe("🎉");
 		expect(enumObj["ключ"]).toBe("значение");
 	});

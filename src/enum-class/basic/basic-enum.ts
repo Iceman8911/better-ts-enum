@@ -1,18 +1,23 @@
+import type { ReadonlyDeep } from "type-fest";
 import type {
 	EnumEntries,
 	EnumKeys,
 	EnumLike,
 	EnumValues,
 } from "../../types/enum/enum-class";
-import type { ReadonlyDeep } from "type-fest";
-import { EnumNs } from "../_shared";
-import { MinimalEnum } from "../minimal/minimal-enum";
 import { defineProperty, freeze, keys } from "../../utils/object";
-import type { BasicEnumNs } from "./_shared";
+import {
+	type Config,
+	DefaultConfig,
+	type MergeConfig,
+	type Methods,
+} from "../_shared/enum";
+import { MinimalEnum } from "../minimal/minimal-enum";
+import type { GetShape } from "./_shared";
 
 export class BasicEnum<
 	const TEnumShape extends EnumLike,
-	const TConfig extends EnumNs.Config,
+	const TConfig extends Config,
 > extends MinimalEnum<TEnumShape, TConfig> {
 	readonly #size: number;
 
@@ -20,7 +25,7 @@ export class BasicEnum<
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<EnumNs.Methods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<Methods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, _config: TConfig) {
 		if ("$" in enumLike)
@@ -33,17 +38,17 @@ export class BasicEnum<
 
 		const self = this;
 
-		const namespacedMethods: EnumNs.Methods<TEnumShape> = {
-			keys: () => self.#keys(),
+		const namespacedMethods: Methods<TEnumShape> = {
 			entries: () => self.#entries(),
-			values: () => self.#values(),
-			size: self.#size,
 			isKey: (key) => self.#isKey(key),
 			isValue: (val) => self.#isValue(val),
+			keys: () => self.#keys(),
 			//@ts-expect-error Inference Limitation
 			get raw() {
 				return { ...self };
 			},
+			size: self.#size,
+			values: () => self.#values(),
 		};
 
 		// `defineProperty` is used to explictly make this readonly and non-enumerable/configurable/writable
@@ -58,16 +63,13 @@ export class BasicEnum<
 	 */
 	static override new<
 		const TEnumShape extends EnumLike,
-		const TConfig extends Partial<EnumNs.Config>,
+		const TConfig extends Partial<Config>,
 	>(
 		enumLike: TEnumShape,
 		config?: TConfig,
-	): BasicEnumNs.GetShape<
-		TEnumShape,
-		EnumNs.MergeConfig<EnumNs.Config, EnumNs.DefaultConfig, TConfig>
-	> {
-		const resolvedConfig: EnumNs.Config = {
-			...EnumNs.DefaultConfig,
+	): GetShape<TEnumShape, MergeConfig<Config, DefaultConfig, TConfig>> {
+		const resolvedConfig: Config = {
+			...DefaultConfig,
 			...config,
 		};
 
@@ -102,11 +104,11 @@ export class BasicEnum<
 		}
 	}
 
-	#isKey(arg: unknown): arg is EnumNs.Methods<TEnumShape>["infer"]["keys"] {
+	#isKey(arg: unknown): arg is Methods<TEnumShape>["infer"]["keys"] {
 		return `${arg}` in this && arg !== "$";
 	}
 
-	#isValue(arg: unknown): arg is EnumNs.Methods<TEnumShape>["infer"]["values"] {
+	#isValue(arg: unknown): arg is Methods<TEnumShape>["infer"]["values"] {
 		let isPresent = false;
 
 		for (const value of this.#values()) {
