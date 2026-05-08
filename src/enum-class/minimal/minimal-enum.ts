@@ -12,7 +12,7 @@ type NamespacedMethods<TEnumShape extends EnumLike> = Pick<
 
 export class MinimalEnum<
 	const TEnumShape extends EnumLike,
-	const TConfig extends EnumNs.ClassConfig,
+	const TConfig extends EnumNs.Config,
 > {
 	declare readonly $: ReadonlyDeep<NamespacedMethods<TEnumShape>>;
 
@@ -22,16 +22,16 @@ export class MinimalEnum<
 
 	static new<
 		const TEnumShape extends EnumLike,
-		const TConfig extends Partial<EnumNs.ClassConfig>,
+		const TConfig extends Partial<EnumNs.Config>,
 	>(
 		enumLike: TEnumShape,
 		config?: TConfig,
 	): MinimalEnumNs.GetShape<
 		TEnumShape,
-		EnumNs.MergeConfig<EnumNs.ClassConfig, EnumNs.DefaultClassConfig, TConfig>
+		EnumNs.MergeConfig<EnumNs.Config, EnumNs.DefaultConfig, TConfig>
 	> {
-		const resolvedConfig: EnumNs.ClassConfig = {
-			...EnumNs.DefaultClassConfig,
+		const resolvedConfig: EnumNs.Config = {
+			...EnumNs.DefaultConfig,
 			...config,
 		};
 

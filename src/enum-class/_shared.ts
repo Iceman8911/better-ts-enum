@@ -12,7 +12,7 @@ import type { _IncrementNumberByOneStage } from "../types/_utils";
 
 /** Shared enum namespace */
 export namespace EnumNs {
-	export interface ClassConfig {
+	export interface Config {
 		/** If `true`, the enum instance is frozen with `Object.freeze()` and it's enum values will be readonly.
 		 *
 		 * Now, this might sound useless, since enums are meant to be immutable, but it's used internally for derived classes of the `BasicEnum`. You likely won't ever need to touch this.
@@ -49,15 +49,15 @@ export namespace EnumNs {
 		nominal: string;
 	}
 
-	export const DefaultClassConfig = {
+	export const DefaultConfig = {
 		freeze: true,
 		nominal: "",
-	} as const satisfies ClassConfig;
+	} as const satisfies Config;
 
-	export type DefaultClassConfig = typeof DefaultClassConfig;
+	export type DefaultConfig = typeof DefaultConfig;
 
 	export type MergeConfig<
-		TReferenceConfig extends ClassConfig,
+		TReferenceConfig extends Config,
 		TDefaultConfig extends TReferenceConfig,
 		TUserConfig extends Partial<TReferenceConfig>,
 	> = Merge<
@@ -100,14 +100,14 @@ export namespace EnumNs {
 
 	export type GetNominalOrRegularShape<
 		TEnumShape extends EnumLike,
-		TConfig extends ClassConfig,
+		TConfig extends Config,
 	> = TConfig["nominal"] extends ""
 		? TEnumShape
 		: NominalizeEnumLike<TEnumShape, TConfig["nominal"]>;
 
 	export type GetFrozenOrRegularShape<
 		TEnumShape extends EnumLike,
-		TConfig extends ClassConfig,
+		TConfig extends Config,
 	> = TConfig["freeze"] extends true
 		? Readonly<TEnumShape>
 		: Writable<TEnumShape>;
@@ -115,7 +115,7 @@ export namespace EnumNs {
 
 /** Shared enum builder namespace */
 export namespace EnumBuilderNs {
-	export interface BuilderConfig extends EnumNs.ClassConfig {
+	export interface Config extends EnumNs.Config {
 		/** Dictates the behaviour for auto-inferred enum values.
 		 *
 		 * - `number` - Uses an auto-incrementing number based off the most recent enum value, else it falls back to 0
@@ -140,14 +140,14 @@ export namespace EnumBuilderNs {
 		suffix: string;
 	}
 
-	export const DefaultBuilderConfig = {
-		...EnumNs.DefaultClassConfig,
+	export const DefaultConfig = {
+		...EnumNs.DefaultConfig,
 		prefix: "",
 		suffix: "",
 		valueType: "number",
-	} as const satisfies BuilderConfig;
+	} as const satisfies Config;
 
-	export type DefaultBuilderConfig = typeof DefaultBuilderConfig;
+	export type DefaultConfig = typeof DefaultConfig;
 
 	export type BuilderEntry<
 		TKey extends EnumKey = EnumKey,
@@ -155,8 +155,8 @@ export namespace EnumBuilderNs {
 	> = readonly [TKey, TValue];
 
 	export type GetBuilderConfig<
-		TUserConfig extends Partial<EnumBuilderNs.BuilderConfig>,
-	> = Merge<EnumBuilderNs.DefaultBuilderConfig, Required<TUserConfig>>;
+		TUserConfig extends Partial<EnumBuilderNs.Config>,
+	> = Merge<EnumBuilderNs.DefaultConfig, Required<TUserConfig>>;
 
 	type LastEntry<T extends readonly EnumBuilderNs.BuilderEntry[]> = T extends [
 		...infer _,
@@ -171,7 +171,7 @@ export namespace EnumBuilderNs {
 
 	type _ApplyPrefixSuffixToStringValue<
 		TValue extends EnumValue,
-		TBuilderConfig extends EnumBuilderNs.BuilderConfig,
+		TBuilderConfig extends EnumBuilderNs.Config,
 	> = TValue extends string
 		? `${TBuilderConfig["prefix"]}${TValue}${TBuilderConfig["suffix"]}`
 		: TValue;
@@ -180,7 +180,7 @@ export namespace EnumBuilderNs {
 		TCurrentEnumBuilderState extends readonly EnumBuilderNs.BuilderEntry[],
 		TKey extends EnumKey,
 		TValue extends EnumValue,
-		TBuilderConfig extends EnumBuilderNs.BuilderConfig,
+		TBuilderConfig extends EnumBuilderNs.Config,
 	> = TKey extends TCurrentEnumBuilderState[number][0]
 		? never
 		: [
@@ -197,7 +197,7 @@ export namespace EnumBuilderNs {
 
 	export type GetNextDefaultValueToUseAsEnumValue<
 		TCurrentEnumBuilderState extends readonly EnumBuilderNs.BuilderEntry[],
-		TBuilderConfig extends EnumBuilderNs.BuilderConfig,
+		TBuilderConfig extends EnumBuilderNs.Config,
 		TCurrentKey extends EnumKey,
 	> = TBuilderConfig["valueType"] extends "number"
 		? GetMostRecentEnumValue<TCurrentEnumBuilderState> extends number

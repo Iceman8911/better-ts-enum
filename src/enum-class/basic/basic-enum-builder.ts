@@ -10,29 +10,21 @@ import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 export class BasicEnumBuilder<
 	const TCurrentEnumBuilderState extends
 		readonly EnumBuilderNs.BuilderEntry[] = [],
-	const TConfig extends
-		EnumBuilderNs.BuilderConfig = EnumBuilderNs.DefaultBuilderConfig,
+	const TConfig extends EnumBuilderNs.Config = EnumBuilderNs.DefaultConfig,
 > extends MinimalEnumBuilder<TCurrentEnumBuilderState, TConfig> {
 	/**
 	 * Static factory for partial config inference with defaults.
 	 */
-	static override new(): BasicEnumBuilder<
-		[],
-		EnumBuilderNs.DefaultBuilderConfig
-	>;
-	static override new<
-		const TConfig extends Partial<EnumBuilderNs.BuilderConfig>,
-	>(
+	static override new(): BasicEnumBuilder<[], EnumBuilderNs.DefaultConfig>;
+	static override new<const TConfig extends Partial<EnumBuilderNs.Config>>(
 		config: TConfig,
 	): BasicEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>>;
-	static override new<
-		const TConfig extends Partial<EnumBuilderNs.BuilderConfig>,
-	>(
+	static override new<const TConfig extends Partial<EnumBuilderNs.Config>>(
 		config?: TConfig,
 	): BasicEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>> {
 		//@ts-expect-error Inference limitation
 		return new BasicEnumBuilder({
-			...EnumBuilderNs.DefaultBuilderConfig,
+			...EnumBuilderNs.DefaultConfig,
 			...config,
 		});
 	}

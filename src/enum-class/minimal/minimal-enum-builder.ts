@@ -9,8 +9,7 @@ import type { MinimalEnumNs } from "./_shared";
 export class MinimalEnumBuilder<
 	const TCurrentEnumBuilderState extends
 		readonly EnumBuilderNs.BuilderEntry[] = [],
-	const TConfig extends
-		EnumBuilderNs.BuilderConfig = EnumBuilderNs.DefaultBuilderConfig,
+	const TConfig extends EnumBuilderNs.Config = EnumBuilderNs.DefaultConfig,
 > {
 	/** Enum State to build upon */
 	//@ts-expect-error Inference limitation
@@ -26,16 +25,16 @@ export class MinimalEnumBuilder<
 	/**
 	 * Static factory for partial config inference with defaults.
 	 */
-	static new(): MinimalEnumBuilder<[], EnumBuilderNs.DefaultBuilderConfig>;
-	static new<const TConfig extends Partial<EnumBuilderNs.BuilderConfig>>(
+	static new(): MinimalEnumBuilder<[], EnumBuilderNs.DefaultConfig>;
+	static new<const TConfig extends Partial<EnumBuilderNs.Config>>(
 		config: TConfig,
 	): MinimalEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>>;
-	static new<const TConfig extends Partial<EnumBuilderNs.BuilderConfig>>(
+	static new<const TConfig extends Partial<EnumBuilderNs.Config>>(
 		config?: TConfig,
 	): MinimalEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>> {
 		//@ts-expect-error Inference limitation
 		return new MinimalEnumBuilder({
-			...EnumBuilderNs.DefaultBuilderConfig,
+			...EnumBuilderNs.DefaultConfig,
 			...config,
 		});
 	}
