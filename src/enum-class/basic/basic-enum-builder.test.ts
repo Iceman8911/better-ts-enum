@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
-import { BasicEnumBuilder } from "./basic-enum-builder";
 import { add, multiply } from "../../arithmetic";
+import { BasicEnumBuilder } from "./basic-enum-builder";
 
 describe(BasicEnumBuilder.name, () => {
 	it("should properly create a complex enum with all properties strongly typed", () => {
@@ -152,9 +152,9 @@ describe(BasicEnumBuilder.name, () => {
 			.build();
 
 		expect(numberEnum.$.raw).toStrictEqual({
-			foo: 0,
 			bar: 1,
 			baz: 2,
+			foo: 0,
 			foobar: 3,
 		});
 		expect(numberEnum).toStrictEqual(numberEnum2);
@@ -170,9 +170,9 @@ describe(BasicEnumBuilder.name, () => {
 			.build();
 
 		expect(numberEnum.$.raw).toStrictEqual({
-			foo: "foo",
 			bar: "bar",
 			baz: "baz",
+			foo: "foo",
 			foobar: "foobar",
 		});
 	});
@@ -190,9 +190,9 @@ describe(BasicEnumBuilder.name, () => {
 
 	it("should apply prefix and suffix to auto-generated and explicit string values", () => {
 		const stringEnum = BasicEnumBuilder.new({
-			valueType: "key",
 			prefix: "https://example.com/api/",
 			suffix: "/v1",
+			valueType: "key",
 		})
 			.$("SECURITY_CHECK")
 			.$("CHECK_USER", "user_checks")
@@ -219,9 +219,9 @@ describe(BasicEnumBuilder.name, () => {
 
 	it("should not apply prefix/suffix to explicit non-string values", () => {
 		const mixedEnum = BasicEnumBuilder.new({
-			valueType: "number",
-			suffix: "-post",
 			prefix: "pre-",
+			suffix: "-post",
+			valueType: "number",
 		})
 			.$("FOO", 42)
 			.$("BAR")

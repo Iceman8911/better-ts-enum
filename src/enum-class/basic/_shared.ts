@@ -1,8 +1,8 @@
 import type { EnumLike } from "../../types/enum/enum-class";
 import type {
 	Config,
-	GetNominalOrRegularShape,
 	GetFrozenOrRegularShape,
+	GetNominalOrRegularShape,
 } from "../_shared/enum";
 
 import type { BasicEnum } from "./basic-enum";

@@ -1,5 +1,5 @@
+import { describe, expect, it } from "bun:test";
 import { copyEnumLikeEntriesWithoutReverseMapping } from "./ts-native-enum";
-import { describe, it, expect } from "bun:test";
 
 describe("removeReverseMappingFromNumericEnum", () => {
 	enum NumericEnum {

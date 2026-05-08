@@ -1,14 +1,14 @@
-import type { EnumLike } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
+import type { EnumLike } from "../../types/enum/enum-class";
+import { freeze } from "../../utils/object";
+import { copyEnumLikeEntriesWithoutReverseMapping } from "../../utils/ts-native-enum";
 import {
-	DefaultConfig,
 	type Config,
+	DefaultConfig,
 	type MergeConfig,
 	type Methods,
 } from "../_shared/enum";
-import { freeze } from "../../utils/object";
 import type { GetShape } from "./_shared";
-import { copyEnumLikeEntriesWithoutReverseMapping } from "../../utils/ts-native-enum";
 
 type NamespacedMethods<TEnumShape extends EnumLike> = Pick<
 	Methods<TEnumShape>,

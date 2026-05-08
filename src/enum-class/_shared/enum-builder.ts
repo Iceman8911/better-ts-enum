@@ -2,7 +2,7 @@ import type { Merge } from "type-fest";
 import type { _IncrementNumberByOneStage } from "../../types/_utils";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import {
-	Config as EnumClassConfig,
+	type Config as EnumClassConfig,
 	DefaultConfig as EnumClassDefaultConfig,
 } from "./enum";
 

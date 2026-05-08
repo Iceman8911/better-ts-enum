@@ -1,18 +1,18 @@
 /** biome-ignore-all lint/suspicious/noMisleadingInstantiator: <biome is confused> */
 import type { Simplify } from "type-fest";
-import { BasicEnum } from "./basic-enum";
-import { MinimalEnumBuilder } from "../minimal/minimal-enum-builder";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import {
-	BuilderEntry,
-	GetBuilderConfig,
-	AddMember,
-	GetNextDefaultValueToUseAsEnumValue,
-	FromEntries,
-	Config,
+	type AddMember,
+	type BuilderEntry,
+	type Config,
 	DefaultConfig,
+	type FromEntries,
+	type GetBuilderConfig,
+	type GetNextDefaultValueToUseAsEnumValue,
 } from "../_shared/enum-builder";
+import { MinimalEnumBuilder } from "../minimal/minimal-enum-builder";
 import type { GetShape } from "./_shared";
+import { BasicEnum } from "./basic-enum";
 
 /** An alternative way of instantiating a `BasicEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
 export class BasicEnumBuilder<

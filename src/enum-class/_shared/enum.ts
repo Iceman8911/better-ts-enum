@@ -1,9 +1,9 @@
-import type { UnionToTuple, Merge, Writable } from "type-fest";
+import type { Merge, UnionToTuple, Writable } from "type-fest";
 import type {
-	EnumLike,
-	EnumKeys,
-	EnumValues,
 	EnumEntries,
+	EnumKeys,
+	EnumLike,
+	EnumValues,
 	NominalizeEnumLike,
 } from "../../types/enum/enum-class";
 

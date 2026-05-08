@@ -1,17 +1,17 @@
 /** biome-ignore-all lint/suspicious/noMisleadingInstantiator: <biome is confused with the overloads> */
 import type { Simplify } from "type-fest";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
-import { MinimalEnum } from "./minimal-enum";
 import {
-	DefaultConfig,
 	type AddMember,
 	type BuilderEntry,
 	type Config,
+	DefaultConfig,
 	type FromEntries,
 	type GetBuilderConfig,
 	type GetNextDefaultValueToUseAsEnumValue,
 } from "../_shared/enum-builder";
 import type { GetShape } from "./_shared";
+import { MinimalEnum } from "./minimal-enum";
 
 /** An alternative way of instantiating a `MinimalEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
 export class MinimalEnumBuilder<

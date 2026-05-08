@@ -1,19 +1,19 @@
+import type { ReadonlyDeep } from "type-fest";
 import type {
 	EnumEntries,
 	EnumKeys,
 	EnumLike,
 	EnumValues,
 } from "../../types/enum/enum-class";
-import type { ReadonlyDeep } from "type-fest";
+import { defineProperty, freeze, keys } from "../../utils/object";
 import {
-	DefaultConfig,
 	type Config,
+	DefaultConfig,
 	type MergeConfig,
 	type Methods,
 } from "../_shared/enum";
 import { MinimalEnum } from "../minimal/minimal-enum";
-import { defineProperty, freeze, keys } from "../../utils/object";
-import { GetShape } from "./_shared";
+import type { GetShape } from "./_shared";
 
 export class BasicEnum<
 	const TEnumShape extends EnumLike,
@@ -39,16 +39,16 @@ export class BasicEnum<
 		const self = this;
 
 		const namespacedMethods: Methods<TEnumShape> = {
-			keys: () => self.#keys(),
 			entries: () => self.#entries(),
-			values: () => self.#values(),
-			size: self.#size,
 			isKey: (key) => self.#isKey(key),
 			isValue: (val) => self.#isValue(val),
+			keys: () => self.#keys(),
 			//@ts-expect-error Inference Limitation
 			get raw() {
 				return { ...self };
 			},
+			size: self.#size,
+			values: () => self.#values(),
 		};
 
 		// `defineProperty` is used to explictly make this readonly and non-enumerable/configurable/writable
