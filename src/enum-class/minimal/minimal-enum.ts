@@ -22,6 +22,8 @@ export class MinimalEnum<
 	declare readonly $: ReadonlyDeep<NamespacedMethods<TEnumShape>>;
 
 	protected constructor(enumLike: TEnumShape, _config: TConfig) {
+		if ("$" in enumLike) throw Error("'$' is reserved.");
+
 		copyEnumLikeEntriesWithoutReverseMapping(enumLike, this);
 	}
 

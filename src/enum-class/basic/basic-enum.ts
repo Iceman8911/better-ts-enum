@@ -28,9 +28,6 @@ export class BasicEnum<
 	declare readonly $: ReadonlyDeep<Methods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, _config: TConfig) {
-		if ("$" in enumLike)
-			throw Error("'$' cannot be used as an enum key since it is reserved.");
-
 		super(enumLike, _config);
 
 		// TODO: Consider a less wasteful way to do this. Less allocations and all
