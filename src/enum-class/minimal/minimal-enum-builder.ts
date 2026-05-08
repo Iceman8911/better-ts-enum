@@ -12,8 +12,7 @@ export class MinimalEnumBuilder<
 	const TConfig extends EnumBuilderNs.Config = EnumBuilderNs.DefaultConfig,
 > {
 	/** Enum State to build upon */
-	//@ts-expect-error Inference limitation
-	protected eS: FromEntries<TCurrentEnumBuilderState> = {};
+	protected s = {} as EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>;
 	#lastValue?: EnumValue;
 	/** Config */
 	protected c: TConfig;
@@ -116,7 +115,7 @@ export class MinimalEnumBuilder<
 		let resolvedValue: TValue;
 
 		if (typeof arg === "function") {
-			const resolved = arg(this.eS);
+			const resolved = arg(this.s);
 
 			if (Array.isArray(resolved)) {
 				resolvedKey = resolved[0];
@@ -139,12 +138,12 @@ export class MinimalEnumBuilder<
 			);
 		}
 
-		if (resolvedKey in this.eS) {
+		if (resolvedKey in this.s) {
 			throw new Error(`Duplicate enum key: ${resolvedKey}`);
 		}
 
-		//@ts-expect-erdror typescript limitation
-		this.eS[resolvedKey] = resolvedValue;
+		//@ts-expect-error typescript limitation
+		this.s[resolvedKey] = resolvedValue;
 
 		this.#lastValue = resolvedValue;
 
@@ -178,6 +177,6 @@ export class MinimalEnumBuilder<
 		Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
 		TConfig
 	> {
-		return MinimalEnum.new(this.eS) as never;
+		return MinimalEnum.new(this.s) as never;
 	}
 }

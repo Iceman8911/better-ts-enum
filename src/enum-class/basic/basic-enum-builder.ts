@@ -111,6 +111,6 @@ export class BasicEnumBuilder<
 		Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
 		TConfig
 	> {
-		return BasicEnum.new(this.eS, this.c);
+		return BasicEnum.new(this.s, this.c) as never;
 	}
 }
