@@ -1,18 +1,18 @@
 import type { EnumLike } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
-import { EnumClass } from "../_shared";
+import { EnumNs } from "../_shared";
 import { freeze } from "../../utils/object";
-import type { MinimalEnumClass } from "./_shared";
+import type { MinimalEnumNs } from "./_shared";
 import { copyEnumLikeEntriesWithoutReverseMapping } from "../../utils/ts-native-enum";
 
 type NamespacedMethods<TEnumShape extends EnumLike> = Pick<
-	EnumClass.Methods<TEnumShape>,
+	EnumNs.Methods<TEnumShape>,
 	"infer"
 >;
 
 export class MinimalEnum<
 	const TEnumShape extends EnumLike,
-	const TConfig extends EnumClass.ClassConfig,
+	const TConfig extends EnumNs.ClassConfig,
 > {
 	declare readonly $: ReadonlyDeep<NamespacedMethods<TEnumShape>>;
 
@@ -22,20 +22,16 @@ export class MinimalEnum<
 
 	static new<
 		const TEnumShape extends EnumLike,
-		const TConfig extends Partial<EnumClass.ClassConfig>,
+		const TConfig extends Partial<EnumNs.ClassConfig>,
 	>(
 		enumLike: TEnumShape,
 		config?: TConfig,
-	): MinimalEnumClass.GetShape<
+	): MinimalEnumNs.GetShape<
 		TEnumShape,
-		EnumClass.MergeConfig<
-			EnumClass.ClassConfig,
-			EnumClass.DefaultClassConfig,
-			TConfig
-		>
+		EnumNs.MergeConfig<EnumNs.ClassConfig, EnumNs.DefaultClassConfig, TConfig>
 	> {
-		const resolvedConfig: EnumClass.ClassConfig = {
-			...EnumClass.DefaultClassConfig,
+		const resolvedConfig: EnumNs.ClassConfig = {
+			...EnumNs.DefaultClassConfig,
 			...config,
 		};
 

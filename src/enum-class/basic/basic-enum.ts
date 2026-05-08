@@ -5,14 +5,14 @@ import type {
 	EnumValues,
 } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
-import { EnumClass } from "../_shared";
+import { EnumNs } from "../_shared";
 import { MinimalEnum } from "../minimal/minimal-enum";
 import { defineProperty, keys } from "../../utils/object";
-import type { BasicEnumClass } from "./_shared";
+import type { BasicEnumNs } from "./_shared";
 
 export class BasicEnum<
 	const TEnumShape extends EnumLike,
-	const TConfig extends EnumClass.ClassConfig,
+	const TConfig extends EnumNs.ClassConfig,
 > extends MinimalEnum<TEnumShape, TConfig> {
 	readonly #size: number;
 
@@ -20,7 +20,7 @@ export class BasicEnum<
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<EnumClass.Methods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<EnumNs.Methods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, _config: TConfig) {
 		if ("$" in enumLike)
@@ -33,7 +33,7 @@ export class BasicEnum<
 
 		const self = this;
 
-		const namespacedMethods: EnumClass.Methods<TEnumShape> = {
+		const namespacedMethods: EnumNs.Methods<TEnumShape> = {
 			keys: () => self.#keys(),
 			entries: () => self.#entries(),
 			values: () => self.#values(),
@@ -58,20 +58,16 @@ export class BasicEnum<
 	 */
 	static override new<
 		const TEnumShape extends EnumLike,
-		const TConfig extends Partial<EnumClass.ClassConfig>,
+		const TConfig extends Partial<EnumNs.ClassConfig>,
 	>(
 		enumLike: TEnumShape,
 		config?: TConfig,
-	): BasicEnumClass.GetShape<
+	): BasicEnumNs.GetShape<
 		TEnumShape,
-		EnumClass.MergeConfig<
-			EnumClass.ClassConfig,
-			EnumClass.DefaultClassConfig,
-			TConfig
-		>
+		EnumNs.MergeConfig<EnumNs.ClassConfig, EnumNs.DefaultClassConfig, TConfig>
 	> {
-		const resolvedConfig: EnumClass.ClassConfig = {
-			...EnumClass.DefaultClassConfig,
+		const resolvedConfig: EnumNs.ClassConfig = {
+			...EnumNs.DefaultClassConfig,
 			...config,
 		};
 
@@ -106,13 +102,11 @@ export class BasicEnum<
 		}
 	}
 
-	#isKey(arg: unknown): arg is EnumClass.Methods<TEnumShape>["infer"]["keys"] {
+	#isKey(arg: unknown): arg is EnumNs.Methods<TEnumShape>["infer"]["keys"] {
 		return `${arg}` in this && arg !== "$";
 	}
 
-	#isValue(
-		arg: unknown,
-	): arg is EnumClass.Methods<TEnumShape>["infer"]["values"] {
+	#isValue(arg: unknown): arg is EnumNs.Methods<TEnumShape>["infer"]["values"] {
 		let isPresent = false;
 
 		for (const value of this.#values()) {

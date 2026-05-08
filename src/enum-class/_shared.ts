@@ -11,7 +11,7 @@ import type {
 import type { _IncrementNumberByOneStage } from "../types/_utils";
 
 /** Shared enum namespace */
-export namespace EnumClass {
+export namespace EnumNs {
 	export interface ClassConfig {
 		/** If `true`, the enum instance is frozen with `Object.freeze()` and it's enum values will be readonly.
 		 *
@@ -55,40 +55,6 @@ export namespace EnumClass {
 	} as const satisfies ClassConfig;
 
 	export type DefaultClassConfig = typeof DefaultClassConfig;
-
-	export interface BuilderConfig extends ClassConfig {
-		/** Dictates the behaviour for auto-inferred enum values.
-		 *
-		 * - `number` - Uses an auto-incrementing number based off the most recent enum value, else it falls back to 0
-		 * - `key` - Uses the enum's key as it's value
-		 *
-		 * @default "number"
-		 */
-		valueType: "number" | "key";
-
-		/** Optional prefix to apply to any string enum value.
-		 *
-		 * This is applied to both auto-generated key values and explicit string values.
-		 * @default ""
-		 */
-		prefix: string;
-
-		/** Optional suffix to apply to any string enum value.
-		 *
-		 * This is applied to both auto-generated key values and explicit string values.
-		 * @default ""
-		 */
-		suffix: string;
-	}
-
-	export const DefaultBuilderConfig = {
-		...DefaultClassConfig,
-		prefix: "",
-		suffix: "",
-		valueType: "number",
-	} as const satisfies BuilderConfig;
-
-	export type DefaultBuilderConfig = typeof DefaultBuilderConfig;
 
 	export type MergeConfig<
 		TReferenceConfig extends ClassConfig,
@@ -145,6 +111,43 @@ export namespace EnumClass {
 	> = TConfig["freeze"] extends true
 		? Readonly<TEnumShape>
 		: Writable<TEnumShape>;
+}
+
+/** Shared enum builder namespace */
+export namespace EnumBuilderNs {
+	export interface BuilderConfig extends EnumNs.ClassConfig {
+		/** Dictates the behaviour for auto-inferred enum values.
+		 *
+		 * - `number` - Uses an auto-incrementing number based off the most recent enum value, else it falls back to 0
+		 * - `key` - Uses the enum's key as it's value
+		 *
+		 * @default "number"
+		 */
+		valueType: "number" | "key";
+
+		/** Optional prefix to apply to any string enum value.
+		 *
+		 * This is applied to both auto-generated key values and explicit string values.
+		 * @default ""
+		 */
+		prefix: string;
+
+		/** Optional suffix to apply to any string enum value.
+		 *
+		 * This is applied to both auto-generated key values and explicit string values.
+		 * @default ""
+		 */
+		suffix: string;
+	}
+
+	export const DefaultBuilderConfig = {
+		...EnumNs.DefaultClassConfig,
+		prefix: "",
+		suffix: "",
+		valueType: "number",
+	} as const satisfies BuilderConfig;
+
+	export type DefaultBuilderConfig = typeof DefaultBuilderConfig;
 
 	export type BuilderEntry<
 		TKey extends EnumKey = EnumKey,
@@ -152,32 +155,32 @@ export namespace EnumClass {
 	> = readonly [TKey, TValue];
 
 	export type GetBuilderConfig<
-		TUserConfig extends Partial<EnumClass.BuilderConfig>,
-	> = Merge<EnumClass.DefaultBuilderConfig, Required<TUserConfig>>;
+		TUserConfig extends Partial<EnumBuilderNs.BuilderConfig>,
+	> = Merge<EnumBuilderNs.DefaultBuilderConfig, Required<TUserConfig>>;
 
-	type LastEntry<T extends readonly EnumClass.BuilderEntry[]> = T extends [
+	type LastEntry<T extends readonly EnumBuilderNs.BuilderEntry[]> = T extends [
 		...infer _,
 		infer L,
 	]
 		? L
 		: never;
 
-	export type FromEntries<T extends readonly EnumClass.BuilderEntry[]> = {
+	export type FromEntries<T extends readonly EnumBuilderNs.BuilderEntry[]> = {
 		[K in T[number] as K[0]]: K[1];
 	};
 
 	type _ApplyPrefixSuffixToStringValue<
 		TValue extends EnumValue,
-		TBuilderConfig extends EnumClass.BuilderConfig,
+		TBuilderConfig extends EnumBuilderNs.BuilderConfig,
 	> = TValue extends string
 		? `${TBuilderConfig["prefix"]}${TValue}${TBuilderConfig["suffix"]}`
 		: TValue;
 
 	export type AddMember<
-		TCurrentEnumBuilderState extends readonly EnumClass.BuilderEntry[],
+		TCurrentEnumBuilderState extends readonly EnumBuilderNs.BuilderEntry[],
 		TKey extends EnumKey,
 		TValue extends EnumValue,
-		TBuilderConfig extends EnumClass.BuilderConfig,
+		TBuilderConfig extends EnumBuilderNs.BuilderConfig,
 	> = TKey extends TCurrentEnumBuilderState[number][0]
 		? never
 		: [
@@ -189,12 +192,12 @@ export namespace EnumClass {
 			];
 
 	type GetMostRecentEnumValue<
-		TCurrentEnumBuilderState extends readonly EnumClass.BuilderEntry[],
+		TCurrentEnumBuilderState extends readonly EnumBuilderNs.BuilderEntry[],
 	> = LastEntry<TCurrentEnumBuilderState>[1];
 
 	export type GetNextDefaultValueToUseAsEnumValue<
-		TCurrentEnumBuilderState extends readonly EnumClass.BuilderEntry[],
-		TBuilderConfig extends EnumClass.BuilderConfig,
+		TCurrentEnumBuilderState extends readonly EnumBuilderNs.BuilderEntry[],
+		TBuilderConfig extends EnumBuilderNs.BuilderConfig,
 		TCurrentKey extends EnumKey,
 	> = TBuilderConfig["valueType"] extends "number"
 		? GetMostRecentEnumValue<TCurrentEnumBuilderState> extends number

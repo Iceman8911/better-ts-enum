@@ -2,14 +2,15 @@
 import type { Simplify } from "type-fest";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 import { MinimalEnum } from "./minimal-enum";
-import { EnumClass } from "../_shared";
-import type { MinimalEnumClass } from "./_shared";
+import { EnumBuilderNs } from "../_shared";
+import type { MinimalEnumNs } from "./_shared";
 
 /** An alternative way of instantiating a `MinimalEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
 export class MinimalEnumBuilder<
-	const TCurrentEnumBuilderState extends readonly EnumClass.BuilderEntry[] = [],
+	const TCurrentEnumBuilderState extends
+		readonly EnumBuilderNs.BuilderEntry[] = [],
 	const TConfig extends
-		EnumClass.BuilderConfig = EnumClass.DefaultBuilderConfig,
+		EnumBuilderNs.BuilderConfig = EnumBuilderNs.DefaultBuilderConfig,
 > {
 	/** Enum State to build upon */
 	//@ts-expect-error Inference limitation
@@ -25,16 +26,16 @@ export class MinimalEnumBuilder<
 	/**
 	 * Static factory for partial config inference with defaults.
 	 */
-	static new(): MinimalEnumBuilder<[], EnumClass.DefaultBuilderConfig>;
-	static new<const TConfig extends Partial<EnumClass.BuilderConfig>>(
+	static new(): MinimalEnumBuilder<[], EnumBuilderNs.DefaultBuilderConfig>;
+	static new<const TConfig extends Partial<EnumBuilderNs.BuilderConfig>>(
 		config: TConfig,
-	): MinimalEnumBuilder<[], EnumClass.GetBuilderConfig<TConfig>>;
-	static new<const TConfig extends Partial<EnumClass.BuilderConfig>>(
+	): MinimalEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>>;
+	static new<const TConfig extends Partial<EnumBuilderNs.BuilderConfig>>(
 		config?: TConfig,
-	): MinimalEnumBuilder<[], EnumClass.GetBuilderConfig<TConfig>> {
+	): MinimalEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>> {
 		//@ts-expect-error Inference limitation
 		return new MinimalEnumBuilder({
-			...EnumClass.DefaultBuilderConfig,
+			...EnumBuilderNs.DefaultBuilderConfig,
 			...config,
 		});
 	}
@@ -46,10 +47,10 @@ export class MinimalEnumBuilder<
 	$<TKey extends EnumKey>(
 		key: TKey,
 	): MinimalEnumBuilder<
-		EnumClass.AddMember<
+		EnumBuilderNs.AddMember<
 			TCurrentEnumBuilderState,
 			TKey,
-			EnumClass.GetNextDefaultValueToUseAsEnumValue<
+			EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
 				TCurrentEnumBuilderState,
 				TConfig,
 				TKey
@@ -66,7 +67,7 @@ export class MinimalEnumBuilder<
 		key: TKey,
 		value: TValue,
 	): MinimalEnumBuilder<
-		EnumClass.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums.
@@ -75,17 +76,18 @@ export class MinimalEnumBuilder<
 	 */
 	$<
 		TKey extends EnumKey,
-		TValue extends EnumValue = EnumClass.GetNextDefaultValueToUseAsEnumValue<
+		TValue extends
+			EnumValue = EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
 			TCurrentEnumBuilderState,
 			TConfig,
 			TKey
 		>,
 	>(
 		callback: (
-			enumSoFar: Simplify<EnumClass.FromEntries<TCurrentEnumBuilderState>>,
+			enumSoFar: Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
 		) => TKey | readonly [TKey, TValue],
 	): MinimalEnumBuilder<
-		EnumClass.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding more enum members with maximum type safety.
@@ -94,7 +96,8 @@ export class MinimalEnumBuilder<
 	 */
 	$<
 		TKey extends EnumKey,
-		TValue extends EnumValue = EnumClass.GetNextDefaultValueToUseAsEnumValue<
+		TValue extends
+			EnumValue = EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
 			TCurrentEnumBuilderState,
 			TConfig,
 			TKey
@@ -103,11 +106,11 @@ export class MinimalEnumBuilder<
 		arg:
 			| TKey
 			| ((
-					enumSoFar: EnumClass.FromEntries<TCurrentEnumBuilderState>,
+					enumSoFar: EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>,
 			  ) => TKey | readonly [TKey, TValue]),
 		value?: TValue,
 	): MinimalEnumBuilder<
-		EnumClass.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	> {
 		let resolvedKey: TKey;
@@ -171,9 +174,9 @@ export class MinimalEnumBuilder<
 		return this.c.valueType === "number";
 	}
 
-	build(): MinimalEnumClass.GetShape<
+	build(): MinimalEnumNs.GetShape<
 		//@ts-expect-error The simplified type is much more readable
-		Simplify<EnumClass.FromEntries<TCurrentEnumBuilderState>>,
+		Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
 		TConfig
 	> {
 		return MinimalEnum.new(this.eS) as never;
