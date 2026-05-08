@@ -1,21 +1,11 @@
 {
 	"name": "better-ts-enum",
-	"version": "0.3.0",
 	"description": "Yet another typescript enum replacement. Designed for minimal bundle size, maximum type-safety, and ergonomics.",
-	"homepage": "https://github.com/iceman8911/better-ts-enum#readme",
-	"bugs": {
-		"url": "https://github.com/iceman8911/better-ts-enum/issues"
-	},
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/iceman8911/better-ts-enum.git"
-	},
+	"version": "0.3.0",
+	"type": "module",
 	"files": [
 		"dist"
 	],
-	"type": "module",
-	"sideEffects": false,
 	"exports": {
 		"./basic-enum": {
 			"import": {
@@ -37,8 +27,28 @@
 				"default": "./dist/arithmetic.cjs"
 			}
 		},
+		"./minimal-enum": {
+			"import": {
+				"types": "./dist/minimal-enum.d.ts",
+				"default": "./dist/minimal-enum.js"
+			},
+			"require": {
+				"types": "./dist/minimal-enum.d.cts",
+				"default": "./dist/minimal-enum.cjs"
+			}
+		},
 		"./package.json": "./package.json"
 	},
+	"homepage": "https://github.com/iceman8911/better-ts-enum#readme",
+	"bugs": {
+		"url": "https://github.com/iceman8911/better-ts-enum/issues"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/iceman8911/better-ts-enum.git"
+	},
+	"sideEffects": false,
 	"scripts": {
 		"build": "bunup",
 		"dev": "bunup --watch",

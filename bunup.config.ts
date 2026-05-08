@@ -7,7 +7,7 @@ export default defineConfig([
 		format: ["esm", "cjs"],
 		exports: true,
 		packages: "bundle",
-		dts: { resolve: true, splitting: true },
+		dts: { resolve: true, splitting: true, inferTypes: true },
 		report: { brotli: true, gzip: true },
 	},
 	{
@@ -20,6 +20,7 @@ export default defineConfig([
 		target: "browser",
 		minify: true,
 		clean: false,
+		dts: { resolve: true, splitting: true, inferTypes: true },
 		report: { brotli: true, gzip: true },
 	},
 ]);

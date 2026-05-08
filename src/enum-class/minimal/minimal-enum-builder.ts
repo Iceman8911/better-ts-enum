@@ -1,0 +1,181 @@
+/** biome-ignore-all lint/suspicious/noMisleadingInstantiator: <biome is confused with the overloads> */
+import type { Simplify } from "type-fest";
+import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
+import { MinimalEnum } from "./minimal-enum";
+import { EnumClass } from "../_shared";
+import type { MinimalEnumClass } from "./_shared";
+
+/** An alternative way of instantiating a `MinimalEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
+export class MinimalEnumBuilder<
+	const TCurrentEnumBuilderState extends readonly EnumClass.BuilderEntry[] = [],
+	const TConfig extends
+		EnumClass.BuilderConfig = EnumClass.DefaultBuilderConfig,
+> {
+	/** Enum State to build upon */
+	//@ts-expect-error Inference limitation
+	protected eS: FromEntries<TCurrentEnumBuilderState> = {};
+	#lastValue?: EnumValue;
+	/** Config */
+	protected c: TConfig;
+
+	protected constructor(config: TConfig) {
+		this.c = config;
+	}
+
+	/**
+	 * Static factory for partial config inference with defaults.
+	 */
+	static new(): MinimalEnumBuilder<[], EnumClass.DefaultBuilderConfig>;
+	static new<const TConfig extends Partial<EnumClass.BuilderConfig>>(
+		config: TConfig,
+	): MinimalEnumBuilder<[], EnumClass.GetBuilderConfig<TConfig>>;
+	static new<const TConfig extends Partial<EnumClass.BuilderConfig>>(
+		config?: TConfig,
+	): MinimalEnumBuilder<[], EnumClass.GetBuilderConfig<TConfig>> {
+		//@ts-expect-error Inference limitation
+		return new MinimalEnumBuilder({
+			...EnumClass.DefaultBuilderConfig,
+			...config,
+		});
+	}
+
+	/** Chainer for adding an enum member with an auto-incremented and inferred numeric value similar to native typescript enums.
+	 *
+	 * @throws if the key has already been added previously
+	 */
+	$<TKey extends EnumKey>(
+		key: TKey,
+	): MinimalEnumBuilder<
+		EnumClass.AddMember<
+			TCurrentEnumBuilderState,
+			TKey,
+			EnumClass.GetNextDefaultValueToUseAsEnumValue<
+				TCurrentEnumBuilderState,
+				TConfig,
+				TKey
+			>,
+			TConfig
+		>,
+		TConfig
+	>;
+	/** Chainer for adding an enum member with an explictly defined value.
+	 *
+	 * @throws if the key has already been added previously
+	 */
+	$<TKey extends EnumKey, TValue extends EnumValue>(
+		key: TKey,
+		value: TValue,
+	): MinimalEnumBuilder<
+		EnumClass.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		TConfig
+	>;
+	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums.
+	 *
+	 * @throws if the key has already been added previously
+	 */
+	$<
+		TKey extends EnumKey,
+		TValue extends EnumValue = EnumClass.GetNextDefaultValueToUseAsEnumValue<
+			TCurrentEnumBuilderState,
+			TConfig,
+			TKey
+		>,
+	>(
+		callback: (
+			enumSoFar: Simplify<EnumClass.FromEntries<TCurrentEnumBuilderState>>,
+		) => TKey | readonly [TKey, TValue],
+	): MinimalEnumBuilder<
+		EnumClass.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		TConfig
+	>;
+	/** Chainer for adding more enum members with maximum type safety.
+	 *
+	 * @throws if the key has already been added previously
+	 */
+	$<
+		TKey extends EnumKey,
+		TValue extends EnumValue = EnumClass.GetNextDefaultValueToUseAsEnumValue<
+			TCurrentEnumBuilderState,
+			TConfig,
+			TKey
+		>,
+	>(
+		arg:
+			| TKey
+			| ((
+					enumSoFar: EnumClass.FromEntries<TCurrentEnumBuilderState>,
+			  ) => TKey | readonly [TKey, TValue]),
+		value?: TValue,
+	): MinimalEnumBuilder<
+		EnumClass.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		TConfig
+	> {
+		let resolvedKey: TKey;
+		let resolvedValue: TValue;
+
+		if (typeof arg === "function") {
+			const resolved = arg(this.eS);
+
+			if (Array.isArray(resolved)) {
+				resolvedKey = resolved[0];
+				resolvedValue = this.#normalizeValue(resolved[1]) as TValue;
+			} else {
+				resolvedKey = resolved as TKey;
+				//@ts-expect-error Inference limitation
+				resolvedValue = this.#shouldUseNumberAsDefaultValue
+					? this.#defaultEntryNumberValue
+					: this.#normalizeValue(resolvedKey);
+			}
+		} else {
+			resolvedKey = arg as TKey;
+			//@ts-expect-error Inference limitation
+			resolvedValue = this.#normalizeValue(
+				value ??
+					(this.#shouldUseNumberAsDefaultValue
+						? this.#defaultEntryNumberValue
+						: resolvedKey),
+			);
+		}
+
+		if (resolvedKey in this.eS) {
+			throw new Error(`Duplicate enum key: ${resolvedKey}`);
+		}
+
+		//@ts-expect-erdror typescript limitation
+		this.eS[resolvedKey] = resolvedValue;
+
+		this.#lastValue = resolvedValue;
+
+		return this;
+	}
+
+	get #defaultEntryNumberValue(): number {
+		if (typeof this.#lastValue !== "number") {
+			return 0;
+		}
+
+		return this.#lastValue + 1;
+	}
+
+	#normalizeValue<TValue extends EnumValue>(value: TValue) {
+		const { prefix, suffix } = this.c;
+
+		if (typeof value === "string" && (prefix || suffix)) {
+			return `${prefix}${value}${suffix}`;
+		}
+
+		return value;
+	}
+
+	get #shouldUseNumberAsDefaultValue(): boolean {
+		return this.c.valueType === "number";
+	}
+
+	build(): MinimalEnumClass.GetShape<
+		//@ts-expect-error The simplified type is much more readable
+		Simplify<EnumClass.FromEntries<TCurrentEnumBuilderState>>,
+		TConfig
+	> {
+		return MinimalEnum.new(this.eS) as never;
+	}
+}

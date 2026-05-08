@@ -1,13 +1,12 @@
 import type { EnumLike } from "../../types/enum/enum-class";
 import type { EnumClass } from "../_shared";
+import type { MinimalEnum } from "./minimal-enum";
 
-import type { BasicEnum } from "./basic-enum";
-
-export namespace BasicEnumClass {
+export namespace MinimalEnumClass {
 	export type GetShape<
 		TEnumShape extends EnumLike,
 		TConfig extends EnumClass.ClassConfig,
-	> = BasicEnum<
+	> = MinimalEnum<
 		EnumClass.GetNominalOrRegularShape<TEnumShape, TConfig>,
 		TConfig
 	> &

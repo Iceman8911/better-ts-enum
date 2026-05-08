@@ -5,54 +5,41 @@ import type {
 	EnumValues,
 } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
-import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
-import {
-	_DEFAULT_BASIC_ENUM_CLASS_CONFIG,
-	type _BasicEnumClassConfig,
-	type _BasicEnumNamespacedMethods,
-	type _DefaultBasicEnumClassConfig,
-	type _GetBasicEnumShape,
-} from "./_shared";
-
-const { hasOwn, defineProperty } = Object;
+import { EnumClass } from "../_shared";
+import { MinimalEnum } from "../minimal/minimal-enum";
+import { defineProperty, keys } from "../../utils/object";
+import type { BasicEnumClass } from "./_shared";
 
 export class BasicEnum<
 	const TEnumShape extends EnumLike,
-	const TConfig extends _BasicEnumClassConfig,
-> {
-	readonly #size = 0;
+	const TConfig extends EnumClass.ClassConfig,
+> extends MinimalEnum<TEnumShape, TConfig> {
+	readonly #size: number;
 
 	/** Namespace for all class methods.
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<_BasicEnumNamespacedMethods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<EnumClass.Methods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, _config: TConfig) {
-		for (const k in enumLike)
-			if (
-				hasOwn(enumLike, k) &&
-				(Number.isNaN(+k) || typeof enumLike[k] !== "string")
-			) {
-				if (k === "$")
-					throw Error(
-						"'$' cannot be used as an enum key since it is reserved.",
-					);
+		if ("$" in enumLike)
+			throw Error("'$' cannot be used as an enum key since it is reserved.");
 
-				//@ts-expect-error Inference Limitation
-				this[k] = enumLike[k];
-				this.#size++;
-			}
+		super(enumLike, _config);
+
+		// TODO: Consider a less wasteful way to do this. Less allocations and all
+		this.#size = keys(this).length;
 
 		const self = this;
 
-		const namespacedMethods: _BasicEnumNamespacedMethods<TEnumShape> = {
-			keys: self.#keys.bind(self),
-			entries: self.#entries.bind(self),
-			values: self.#values.bind(self),
+		const namespacedMethods: EnumClass.Methods<TEnumShape> = {
+			keys: () => self.#keys(),
+			entries: () => self.#entries(),
+			values: () => self.#values(),
 			size: self.#size,
-			isKey: self.#isKey.bind(self),
-			isValue: self.#isValue.bind(self),
+			isKey: (key) => self.#isKey(key),
+			isValue: (val) => self.#isValue(val),
 			//@ts-expect-error Inference Limitation
 			get raw() {
 				return { ...self };
@@ -69,22 +56,22 @@ export class BasicEnum<
 	 *
 	 * This is preferred over `new BasicEnum` since it's more typesafe
 	 */
-	static new<
+	static override new<
 		const TEnumShape extends EnumLike,
-		const TConfig extends Partial<_BasicEnumClassConfig>,
+		const TConfig extends Partial<EnumClass.ClassConfig>,
 	>(
 		enumLike: TEnumShape,
 		config?: TConfig,
-	): _GetBasicEnumShape<
+	): BasicEnumClass.GetShape<
 		TEnumShape,
-		_GetUserEnumConfigAfterApplyingDefaults<
-			_BasicEnumClassConfig,
-			_DefaultBasicEnumClassConfig,
+		EnumClass.MergeConfig<
+			EnumClass.ClassConfig,
+			EnumClass.DefaultClassConfig,
 			TConfig
 		>
 	> {
-		const resolvedConfig: _BasicEnumClassConfig = {
-			..._DEFAULT_BASIC_ENUM_CLASS_CONFIG,
+		const resolvedConfig: EnumClass.ClassConfig = {
+			...EnumClass.DefaultClassConfig,
 			...config,
 		};
 
@@ -119,15 +106,13 @@ export class BasicEnum<
 		}
 	}
 
-	#isKey(
-		arg: unknown,
-	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
+	#isKey(arg: unknown): arg is EnumClass.Methods<TEnumShape>["infer"]["keys"] {
 		return `${arg}` in this && arg !== "$";
 	}
 
 	#isValue(
 		arg: unknown,
-	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
+	): arg is EnumClass.Methods<TEnumShape>["infer"]["values"] {
 		let isPresent = false;
 
 		for (const value of this.#values()) {
