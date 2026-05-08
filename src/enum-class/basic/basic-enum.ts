@@ -7,7 +7,7 @@ import type {
 import type { ReadonlyDeep } from "type-fest";
 import { EnumNs } from "../_shared";
 import { MinimalEnum } from "../minimal/minimal-enum";
-import { defineProperty, keys } from "../../utils/object";
+import { defineProperty, freeze, keys } from "../../utils/object";
 import type { BasicEnumNs } from "./_shared";
 
 export class BasicEnum<
@@ -74,7 +74,7 @@ export class BasicEnum<
 		const instance = new BasicEnum(enumLike, resolvedConfig);
 
 		//@ts-expect-error Inference Limitation
-		return resolvedConfig.freeze ? Object.freeze(instance) : instance;
+		return resolvedConfig.freeze ? freeze(instance) : instance;
 	}
 
 	//@ts-expect-error Inference Limitation
