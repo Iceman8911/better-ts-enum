@@ -1,4 +1,4 @@
-import { removeReverseMappingFromNumericEnum } from "./ts-native-enum";
+import { copyEnumLikeEntriesWithoutReverseMapping } from "./ts-native-enum";
 import { describe, it, expect } from "bun:test";
 
 describe("removeReverseMappingFromNumericEnum", () => {
@@ -18,28 +18,28 @@ describe("removeReverseMappingFromNumericEnum", () => {
 	}
 
 	it("removes reverse mapping from numeric enums", () => {
-		const result = removeReverseMappingFromNumericEnum(NumericEnum);
+		const result = copyEnumLikeEntriesWithoutReverseMapping(NumericEnum);
 		expect(result).toEqual({ A: 0, B: 1 });
 	});
 
 	it("does not modify string enums", () => {
-		const result = removeReverseMappingFromNumericEnum(StringEnum);
+		const result = copyEnumLikeEntriesWithoutReverseMapping(StringEnum);
 		expect(result).toEqual({ X: StringEnum.X, Y: StringEnum.Y });
 	});
 
 	it("removes only numeric reverse mappings from mixed enums", () => {
-		const result = removeReverseMappingFromNumericEnum(MixedEnum);
+		const result = copyEnumLikeEntriesWithoutReverseMapping(MixedEnum);
 		expect(result).toEqual({ A: 0, B: MixedEnum.B });
 		expect(Object.keys(result)).toEqual(["A", "B"]);
 	});
 
 	it("returns a new object, not the original", () => {
-		const result = removeReverseMappingFromNumericEnum(NumericEnum);
+		const result = copyEnumLikeEntriesWithoutReverseMapping(NumericEnum);
 		expect(result).not.toBe(NumericEnum);
 	});
 
 	it("handles empty enums", () => {
-		const result = removeReverseMappingFromNumericEnum({});
+		const result = copyEnumLikeEntriesWithoutReverseMapping({});
 		expect(result).toEqual({});
 	});
 });

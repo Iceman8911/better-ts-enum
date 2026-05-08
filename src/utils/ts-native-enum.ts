@@ -1,16 +1,16 @@
 import type { EnumLike } from "../types/enum/enum-class";
+import { hasOwn } from "./object";
 
-export function removeReverseMappingFromNumericEnum<TEnum extends EnumLike>(
-	numericEnum: TEnum,
-): TEnum {
-	const r = {} as TEnum;
-
+export function copyEnumLikeEntriesWithoutReverseMapping<
+	TEnum extends EnumLike,
+>(numericEnum: TEnum, objectToCopyTo: object = {}) {
 	for (const k in numericEnum)
 		if (
-			Object.getOwnPropertyDescriptor(numericEnum, k) &&
+			hasOwn(numericEnum, k) &&
 			(Number.isNaN(+k) || typeof numericEnum[k] !== "string")
 		)
-			r[k] = numericEnum[k];
+			//@ts-expect-error inference limitation
+			objectToCopyTo[k] = numericEnum[k];
 
-	return r as TEnum;
+	return objectToCopyTo;
 }

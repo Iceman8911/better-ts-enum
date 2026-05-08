@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it } from "bun:test";
 import { BasicEnum } from "./basic-enum";
 import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
-import { removeReverseMappingFromNumericEnum } from "../../utils/ts-native-enum";
+import { copyEnumLikeEntriesWithoutReverseMapping } from "../../utils/ts-native-enum";
 
 type TestEnumArg = typeof testEnumArg;
 type TestEnumArgKeys = keyof TestEnumArg;
@@ -143,12 +143,6 @@ describe(BasicEnum.name, () => {
 		>().toEqualTypeOf<TestEnumArgValues>();
 	});
 
-	it("should throw upon accessing `$.infer` since it's a type-only construct", () => {
-		expect(() => testEnum.$.infer).toThrow();
-		expect(() => testEnum.$.infer.keys).toThrow();
-		expect(() => testEnum.$.infer.values).toThrow();
-	});
-
 	it("should infer nominal typing when nominal: true is set", () => {
 		const nominalEnum1 = BasicEnum.new(
 			{ FOO: 1, BAR: 2 },
@@ -243,10 +237,14 @@ describe(BasicEnum.name, () => {
 			ReverseMappedNativeEnum,
 		);
 		expect(strippedEnumInstance.$.raw).toStrictEqual(
-			removeReverseMappingFromNumericEnum(ReverseMappedNativeEnum),
+			copyEnumLikeEntriesWithoutReverseMapping(
+				ReverseMappedNativeEnum,
+			) as never,
 		);
 		expectTypeOf(strippedEnumInstance.$.raw).toEqualTypeOf(
-			removeReverseMappingFromNumericEnum(ReverseMappedNativeEnum),
+			copyEnumLikeEntriesWithoutReverseMapping(
+				ReverseMappedNativeEnum,
+			) as never,
 		);
 	});
 

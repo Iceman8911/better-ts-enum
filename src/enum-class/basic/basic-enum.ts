@@ -5,69 +5,50 @@ import type {
 	EnumValues,
 } from "../../types/enum/enum-class";
 import type { ReadonlyDeep } from "type-fest";
-import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
-import {
-	_DEFAULT_BASIC_ENUM_CLASS_CONFIG,
-	type _BasicEnumClassConfig,
-	type _BasicEnumNamespacedMethods,
-	type _DefaultBasicEnumClassConfig,
-	type _GetBasicEnumShape,
-} from "./_shared";
-
-const { hasOwn, defineProperty } = Object;
+import { EnumNs } from "../_shared";
+import { MinimalEnum } from "../minimal/minimal-enum";
+import { defineProperty, freeze, keys } from "../../utils/object";
+import type { BasicEnumNs } from "./_shared";
 
 export class BasicEnum<
 	const TEnumShape extends EnumLike,
-	const TConfig extends _BasicEnumClassConfig,
-> {
-	readonly #size = 0;
+	const TConfig extends EnumNs.Config,
+> extends MinimalEnum<TEnumShape, TConfig> {
+	readonly #size: number;
 
 	/** Namespace for all class methods.
 	 *
 	 * This is used to prevent collisions with valid enum keys
 	 */
-	declare readonly $: ReadonlyDeep<_BasicEnumNamespacedMethods<TEnumShape>>;
+	declare readonly $: ReadonlyDeep<EnumNs.Methods<TEnumShape>>;
 
 	private constructor(enumLike: TEnumShape, _config: TConfig) {
-		for (const k in enumLike)
-			if (
-				hasOwn(enumLike, k) &&
-				(Number.isNaN(+k) || typeof enumLike[k] !== "string")
-			) {
-				if (k === "$")
-					throw Error(
-						"'$' cannot be used as an enum key since it is reserved.",
-					);
+		if ("$" in enumLike)
+			throw Error("'$' cannot be used as an enum key since it is reserved.");
 
-				//@ts-expect-error Inference Limitation
-				this[k] = enumLike[k];
-				this.#size++;
-			}
+		super(enumLike, _config);
+
+		// TODO: Consider a less wasteful way to do this. Less allocations and all
+		this.#size = keys(this).length;
 
 		const self = this;
 
-		const namespacedMethods: _BasicEnumNamespacedMethods<TEnumShape> = {
-			keys: self.#keys.bind(self),
-			entries: self.#entries.bind(self),
-			values: self.#values.bind(self),
+		const namespacedMethods: EnumNs.Methods<TEnumShape> = {
+			keys: () => self.#keys(),
+			entries: () => self.#entries(),
+			values: () => self.#values(),
 			size: self.#size,
-			isKey: self.#isKey.bind(self),
-			isValue: self.#isValue.bind(self),
-			//@ts-expect-error Inference Limitation
-			get infer() {
-				return self.#infer;
-			},
+			isKey: (key) => self.#isKey(key),
+			isValue: (val) => self.#isValue(val),
 			//@ts-expect-error Inference Limitation
 			get raw() {
 				return { ...self };
 			},
 		};
 
+		// `defineProperty` is used to explictly make this readonly and non-enumerable/configurable/writable
 		defineProperty(this, "$", {
 			value: namespacedMethods,
-			enumerable: false,
-			configurable: true,
-			writable: false,
 		});
 	}
 
@@ -75,29 +56,25 @@ export class BasicEnum<
 	 *
 	 * This is preferred over `new BasicEnum` since it's more typesafe
 	 */
-	static new<
+	static override new<
 		const TEnumShape extends EnumLike,
-		const TConfig extends Partial<_BasicEnumClassConfig>,
+		const TConfig extends Partial<EnumNs.Config>,
 	>(
 		enumLike: TEnumShape,
 		config?: TConfig,
-	): _GetBasicEnumShape<
+	): BasicEnumNs.GetShape<
 		TEnumShape,
-		_GetUserEnumConfigAfterApplyingDefaults<
-			_BasicEnumClassConfig,
-			_DefaultBasicEnumClassConfig,
-			TConfig
-		>
+		EnumNs.MergeConfig<EnumNs.Config, EnumNs.DefaultConfig, TConfig>
 	> {
-		const resolvedConfig: _BasicEnumClassConfig = {
-			..._DEFAULT_BASIC_ENUM_CLASS_CONFIG,
+		const resolvedConfig: EnumNs.Config = {
+			...EnumNs.DefaultConfig,
 			...config,
 		};
 
 		const instance = new BasicEnum(enumLike, resolvedConfig);
 
 		//@ts-expect-error Inference Limitation
-		return resolvedConfig.freeze ? Object.freeze(instance) : instance;
+		return resolvedConfig.freeze ? freeze(instance) : instance;
 	}
 
 	//@ts-expect-error Inference Limitation
@@ -125,15 +102,11 @@ export class BasicEnum<
 		}
 	}
 
-	#isKey(
-		arg: unknown,
-	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["keys"] {
+	#isKey(arg: unknown): arg is EnumNs.Methods<TEnumShape>["infer"]["keys"] {
 		return `${arg}` in this && arg !== "$";
 	}
 
-	#isValue(
-		arg: unknown,
-	): arg is _BasicEnumNamespacedMethods<TEnumShape>["infer"]["values"] {
+	#isValue(arg: unknown): arg is EnumNs.Methods<TEnumShape>["infer"]["values"] {
 		let isPresent = false;
 
 		for (const value of this.#values()) {
@@ -144,12 +117,6 @@ export class BasicEnum<
 		}
 
 		return isPresent;
-	}
-
-	get #infer() {
-		throw Error(
-			"`this.#infer` is a type-only property. Do not call it in runtime code.",
-		);
 	}
 
 	[Symbol.iterator](): EnumEntries<TEnumShape> {

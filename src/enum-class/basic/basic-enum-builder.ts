@@ -1,103 +1,30 @@
+/** biome-ignore-all lint/suspicious/noMisleadingInstantiator: <biome is confused> */
 import type { Simplify } from "type-fest";
-import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
-import type { _IncrementNumberByOneStage } from "../../types/_utils";
 import { BasicEnum } from "./basic-enum";
-import {
-	_DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG,
-	type _BasicEnumClassBuilderConfig,
-	type _DefaultBasicEnumClassBuilderConfig,
-	type _GetBasicEnumShape,
-} from "./_shared";
-import type { _GetUserEnumConfigAfterApplyingDefaults } from "../_shared";
-
-type EnumBuilderEntry<
-	TKey extends EnumKey = EnumKey,
-	TValue extends EnumValue = EnumValue,
-> = readonly [TKey, TValue];
-
-type LastEntry<T extends readonly EnumBuilderEntry[]> = T extends [
-	...infer _,
-	infer L,
-]
-	? L
-	: never;
-
-type FromEntries<T extends readonly EnumBuilderEntry[]> = {
-	[K in T[number] as K[0]]: K[1];
-};
-
-type _ApplyPrefixSuffixToStringValue<
-	TValue extends EnumValue,
-	TBuilderConfig extends _BasicEnumClassBuilderConfig,
-> = TValue extends string
-	? `${TBuilderConfig["prefix"]}${TValue}${TBuilderConfig["suffix"]}`
-	: TValue;
-
-type AddMember<
-	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
-	TKey extends EnumKey,
-	TValue extends EnumValue,
-	TBuilderConfig extends _BasicEnumClassBuilderConfig,
-> = TKey extends TCurrentEnumBuilderState[number][0]
-	? never
-	: [
-			...TCurrentEnumBuilderState,
-			readonly [TKey, _ApplyPrefixSuffixToStringValue<TValue, TBuilderConfig>],
-		];
-
-type GetMostRecentEnumValue<
-	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
-> = LastEntry<TCurrentEnumBuilderState>[1];
-
-type GetNextDefaultValueToUseAsEnumValue<
-	TCurrentEnumBuilderState extends readonly EnumBuilderEntry[],
-	TBuilderConfig extends _BasicEnumClassBuilderConfig,
-	TCurrentKey extends EnumKey,
-> = TBuilderConfig["valueType"] extends "number"
-	? GetMostRecentEnumValue<TCurrentEnumBuilderState> extends number
-		? _IncrementNumberByOneStage<
-				GetMostRecentEnumValue<TCurrentEnumBuilderState>
-			> extends never
-			? 0
-			: _IncrementNumberByOneStage<
-					GetMostRecentEnumValue<TCurrentEnumBuilderState>
-				>
-		: 0
-	: TBuilderConfig["valueType"] extends "key"
-		? TCurrentKey
-		: never;
+import { EnumBuilderNs } from "../_shared";
+import { MinimalEnumBuilder } from "../minimal/minimal-enum-builder";
+import type { BasicEnumNs } from "./_shared";
+import type { EnumKey, EnumValue } from "../../types/enum/enum-class";
 
 /** An alternative way of instantiating a `BasicEnum` if you prefer the ergonomics of auto-incrementing, and strongly typed computed values. */
 export class BasicEnumBuilder<
-	const TCurrentEnumBuilderState extends readonly EnumBuilderEntry[] = [],
-	const TConfig extends
-		_BasicEnumClassBuilderConfig = _BasicEnumClassBuilderConfig,
-> {
-	//@ts-expect-error Inference limitation
-	#enumState: FromEntries<TCurrentEnumBuilderState> = {};
-	#lastValue?: EnumValue;
-	#config: TConfig;
-
-	private constructor(config: TConfig) {
-		this.#config = config;
-	}
-
+	const TCurrentEnumBuilderState extends
+		readonly EnumBuilderNs.BuilderEntry[] = [],
+	const TConfig extends EnumBuilderNs.Config = EnumBuilderNs.DefaultConfig,
+> extends MinimalEnumBuilder<TCurrentEnumBuilderState, TConfig> {
 	/**
 	 * Static factory for partial config inference with defaults.
 	 */
-	static new<const TConfig extends Partial<_BasicEnumClassBuilderConfig>>(
+	static override new(): BasicEnumBuilder<[], EnumBuilderNs.DefaultConfig>;
+	static override new<const TConfig extends Partial<EnumBuilderNs.Config>>(
+		config: TConfig,
+	): BasicEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>>;
+	static override new<const TConfig extends Partial<EnumBuilderNs.Config>>(
 		config?: TConfig,
-	): BasicEnumBuilder<
-		[],
-		_GetUserEnumConfigAfterApplyingDefaults<
-			_BasicEnumClassBuilderConfig,
-			_DefaultBasicEnumClassBuilderConfig,
-			TConfig
-		>
-	> {
+	): BasicEnumBuilder<[], EnumBuilderNs.GetBuilderConfig<TConfig>> {
 		//@ts-expect-error Inference limitation
 		return new BasicEnumBuilder({
-			..._DEFAULT_BASIC_ENUM_CLASS_BUILDER_CONFIG,
+			...EnumBuilderNs.DefaultConfig,
 			...config,
 		});
 	}
@@ -106,13 +33,13 @@ export class BasicEnumBuilder<
 	 *
 	 * @throws if the key has already been added previously
 	 */
-	$<TKey extends EnumKey>(
+	override $<TKey extends EnumKey>(
 		key: TKey,
 	): BasicEnumBuilder<
-		AddMember<
+		EnumBuilderNs.AddMember<
 			TCurrentEnumBuilderState,
 			TKey,
-			GetNextDefaultValueToUseAsEnumValue<
+			EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
 				TCurrentEnumBuilderState,
 				TConfig,
 				TKey
@@ -125,39 +52,41 @@ export class BasicEnumBuilder<
 	 *
 	 * @throws if the key has already been added previously
 	 */
-	$<TKey extends EnumKey, TValue extends EnumValue>(
+	override $<TKey extends EnumKey, TValue extends EnumValue>(
 		key: TKey,
 		value: TValue,
 	): BasicEnumBuilder<
-		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding a computed enum member with greater flexibility than native typescript enums.
 	 *
 	 * @throws if the key has already been added previously
 	 */
-	$<
+	override $<
 		TKey extends EnumKey,
-		TValue extends EnumValue = GetNextDefaultValueToUseAsEnumValue<
+		TValue extends
+			EnumValue = EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
 			TCurrentEnumBuilderState,
 			TConfig,
 			TKey
 		>,
 	>(
 		callback: (
-			enumSoFar: Simplify<FromEntries<TCurrentEnumBuilderState>>,
+			enumSoFar: Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
 		) => TKey | readonly [TKey, TValue],
 	): BasicEnumBuilder<
-		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	>;
 	/** Chainer for adding more enum members with maximum type safety.
 	 *
 	 * @throws if the key has already been added previously
 	 */
-	$<
+	override $<
 		TKey extends EnumKey,
-		TValue extends EnumValue = GetNextDefaultValueToUseAsEnumValue<
+		TValue extends
+			EnumValue = EnumBuilderNs.GetNextDefaultValueToUseAsEnumValue<
 			TCurrentEnumBuilderState,
 			TConfig,
 			TKey
@@ -166,84 +95,22 @@ export class BasicEnumBuilder<
 		arg:
 			| TKey
 			| ((
-					enumSoFar: FromEntries<TCurrentEnumBuilderState>,
+					enumSoFar: EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>,
 			  ) => TKey | readonly [TKey, TValue]),
 		value?: TValue,
 	): BasicEnumBuilder<
-		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
+		EnumBuilderNs.AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,
 		TConfig
 	> {
-		let resolvedKey: TKey;
-		let resolvedValue: TValue;
-
-		if (typeof arg === "function") {
-			const resolved = arg(this.#enumState);
-
-			if (Array.isArray(resolved)) {
-				resolvedKey = resolved[0];
-				resolvedValue = this.#normalizeValue(resolved[1]);
-			} else {
-				resolvedKey = resolved as TKey;
-				//@ts-expect-error Inference limitation
-				resolvedValue = this.#shouldUseNumberAsDefaultValue
-					? this.#defaultEntryNumberValue
-					: this.#normalizeValue(resolvedKey);
-			}
-		} else {
-			resolvedKey = arg as TKey;
-			//@ts-expect-error Inference limitation
-			resolvedValue = this.#normalizeValue(
-				value ??
-					(this.#shouldUseNumberAsDefaultValue
-						? this.#defaultEntryNumberValue
-						: resolvedKey),
-			);
-		}
-
-		if (resolvedKey in this.#enumState) {
-			throw new Error(`Duplicate enum key: ${resolvedKey}`);
-		}
-
-		//@ts-expect-error typescript limitation
-		this.#enumState[resolvedKey] = resolvedValue;
-
-		this.#lastValue = resolvedValue;
-
-		return this;
-	}
-
-	get #defaultEntryNumberValue(): number {
-		if (typeof this.#lastValue !== "number") {
-			return 0;
-		}
-
-		return this.#lastValue + 1;
-	}
-
-	#normalizeValue<TValue extends EnumValue>(
-		value: TValue,
-	): _ApplyPrefixSuffixToStringValue<TValue, TConfig> {
-		const { prefix, suffix } = this.#config;
-
-		if (typeof value === "string" && (prefix || suffix)) {
-			//@ts-expect-error Inference limitation
-			return `${prefix}${value}${suffix}`;
-		}
-
 		//@ts-expect-error Inference limitation
-		return value;
+		return super.$(arg, value);
 	}
 
-	get #shouldUseNumberAsDefaultValue(): boolean {
-		return this.#config.valueType === "number";
-	}
-
-	build(): _GetBasicEnumShape<
+	override build(): BasicEnumNs.GetShape<
 		//@ts-expect-error The simplified type is much more readable
-		Simplify<FromEntries<TCurrentEnumBuilderState>>,
+		Simplify<EnumBuilderNs.FromEntries<TCurrentEnumBuilderState>>,
 		TConfig
 	> {
-		//@ts-expect-error The simplified type is much more readable
-		return BasicEnum.new(this.#enumState, this.#config);
+		return BasicEnum.new(this.eS, this.c);
 	}
 }
