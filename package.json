@@ -1,7 +1,7 @@
 {
 	"name": "better-ts-enum",
 	"description": "Yet another typescript enum replacement. Designed for minimal bundle size, maximum type-safety, and ergonomics.",
-	"version": "0.6.1",
+	"version": "0.6.2",
 	"type": "module",
 	"files": [
 		"dist"
