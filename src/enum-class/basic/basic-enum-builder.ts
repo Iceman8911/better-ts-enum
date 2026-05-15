@@ -9,6 +9,7 @@ import {
 	type FromEntries,
 	type GetBuilderConfig,
 	type GetNextDefaultValueToUseAsEnumValue,
+	type NextDefaultValue,
 } from "../_shared/enum-builder";
 import { MinimalEnumBuilder } from "../minimal/minimal-enum-builder";
 import type { GetShape } from "./_shared";
@@ -79,7 +80,7 @@ export class BasicEnumBuilder<
 		>,
 	>(
 		callback: (
-			enumSoFar: Simplify<FromEntries<TCurrentEnumBuilderState>>,
+			enumSoFar: FromEntries<TCurrentEnumBuilderState>,
 		) => TKey | readonly [TKey, TValue],
 	): BasicEnumBuilder<
 		AddMember<TCurrentEnumBuilderState, TKey, TValue, TConfig>,

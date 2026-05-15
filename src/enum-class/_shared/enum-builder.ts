@@ -101,3 +101,15 @@ export type GetNextDefaultValueToUseAsEnumValue<
 	: TBuilderConfig["valueType"] extends "key"
 		? TCurrentKey
 		: never;
+
+/** Alias to `GetNextDefaultValueToUseAsEnumValue` to give the checker a stable name
+	it can cache across repeated instantiations. */
+export type NextDefaultValue<
+	TCurrentEnumBuilderState extends readonly BuilderEntry[],
+	TBuilderConfig extends Config,
+	TCurrentKey extends EnumKey,
+> = GetNextDefaultValueToUseAsEnumValue<
+	TCurrentEnumBuilderState,
+	TBuilderConfig,
+	TCurrentKey
+>;
